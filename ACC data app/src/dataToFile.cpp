@@ -10,17 +10,17 @@
 
 using json = nlohmann::json;
 
-std::ofstream outfile;
+std::fstream outfile;
 
 // this may be kind of dumb openFile en closeFile
 // figure out if opening a stream can also be used by other files
 // meaning that if I make ofstream outfile in two files that both can read and
 // write to the same file?... 
 void openFile(std::wstring file_location) {
-	std::cout << "we arrived" << std::endl;
 	outfile.open(file_location);
-	if (outfile.is_open()) {
-		std::cout << "opened the file\n" << std::endl;
+	if (!outfile.is_open()) {
+		fprintf(stderr, "couldn't open file");
+		return;
 	}
 }
 
@@ -30,6 +30,36 @@ void closeFile() {
 
 void writeToFile(json& j) {
 	outfile << j << "\n";
+}
+
+json readFromFile(std::wstring file_location) {
+	outfile.open(file_location);
+	std::string file_contents((std::istreambuf_iterator<char>(outfile)), (std::istreambuf_iterator<char>()));
+
+	json j = json::parse(file_contents);
+	outfile.close();
+
+	return j;
+}
+
+std::string getSessionType(int session) {
+	std::string sessionType;
+	switch (session) {
+		case -1: sessionType = "UNKOWN"; break;
+		case 0: sessionType = "practise"; break;
+		case 1: sessionType = "qualy"; break;
+		case 2: sessionType = "race"; break;
+		case 3: sessionType = "hotlap"; break;
+		case 4: sessionType = "timeattack"; break;
+		case 5: sessionType = "drift"; break;
+		case 6: sessionType = "drag"; break;
+		case 7: sessionType = "hotstint"; break;
+		case 8: sessionType = "hotlapsuperpole"; break;
+		default:
+			break;
+	}
+
+	return sessionType;
 }
 
 

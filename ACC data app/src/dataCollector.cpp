@@ -68,8 +68,9 @@ int _tmain(int argc_, _TCHAR* argv[])
     // IMGUI stuff //
     /////////////////
     glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
+    if (!glfwInit()) {
         return 1;
+    }
 
     // GL 3.0 + GLSL 130
     const char* glsl_version = "#version 130";
@@ -78,10 +79,13 @@ int _tmain(int argc_, _TCHAR* argv[])
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 
-    // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
-    if (window == NULL)
+    // Create fullscreen window with graphics context at 1080p
+    GLFWwindow* window = glfwCreateWindow(1920/1.5, 1080/1.5, "ACC data app (title in progress)", NULL, NULL);
+    if (window == NULL) 
+    {
+        fprintf(stderr, "error: window creation failed!\n");
         return 1;
+    }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
 
@@ -100,10 +104,26 @@ int _tmain(int argc_, _TCHAR* argv[])
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    ImFont* cascadia = io.Fonts->AddFontFromFileTTF("C:\\Windows\\fonts\\CascadiaMono.ttf", 16);
+    if (cascadia == NULL)
+    {
+        fprintf(stderr, "error: couldn't add font\n");
+        return 1;
+    }
+
     // Our state
     bool show_demo_window = true;
     bool show_another_window = false;
+    bool menu_initialized = false;
+    bool data_initialized = false;
+    ImVec2 prev_win_size = { 0, 0 };
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    ImGuiWindowFlags window_flags = 0;
+    window_flags |= ImGuiWindowFlags_NoTitleBar;
+    window_flags |= ImGuiWindowFlags_NoMove;
+
+    std::wstring file_to_show = L"";
     /////////////////////
     // end IMGUI stuff //
     /////////////////////
@@ -119,7 +139,7 @@ int _tmain(int argc_, _TCHAR* argv[])
 			if (newSession) {
 				newSession = false;
 				lastSessionType = pfg->session;
-				session.setSessionData(pfs);
+				session.setSessionData(pfs, pfg);
 				std::cout << "new session started" << std::endl;
 			}
 			// break out of session loop when a session changes
@@ -131,7 +151,7 @@ int _tmain(int argc_, _TCHAR* argv[])
 			// track and multiplayer or singleplayer
 			// std::cout << pfg->iLastTime << '\n';
 			laps = updateLap(pfg, laps);
-			Sleep(100); // in miliseconds, tickrate is 1Hz
+			Sleep(100); // in miliseconds, tickrate is 10Hz
 		}
 
 		if (!newSession) {
@@ -160,39 +180,125 @@ int _tmain(int argc_, _TCHAR* argv[])
         ImGui::NewFrame();
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
+        /*if (show_demo_window) {
             ImGui::ShowDemoWindow(&show_demo_window);
+        }*/
 
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+        // 2.5 our own created windows
+        int framebufferWidth, framebufferHeight;
+        glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+
+        // left window
         {
-            static float f = 0.0f;
-            static int counter = 0;
+            if (!menu_initialized)
+            {
+                ImGui::SetNextWindowSize(ImVec2((float)framebufferWidth / 3, (float)framebufferHeight));
+                ImGui::SetNextWindowPos(ImVec2(0, 0));
+                menu_initialized = true;
+            }
+            else
+            {
+                ImGui::SetNextWindowSize(ImVec2((float)framebufferWidth - prev_win_size.x, (float)framebufferHeight));
+                ImGui::SetNextWindowPos(ImVec2(0, 0));
+            }
+            if (!ImGui::Begin("menu", NULL, window_flags))
+            {
+                ImGui::End();
+                return 1;
+            }
+            ImGui::Text("Menu will come here");
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            // should read the files only once and create buttons again and again
+            // data of files stored in vector of j...
+            // if we would do that then we wouldnt need to read the files twice...
+            std::wstring data_folder = L"\\ACC app data";
+            std::wstring path = mydoc_path + data_folder;
+            for (const auto& entry : std::filesystem::directory_iterator(path))
+            {
+                // read json into json j
+                json j = readFromFile(entry.path());
+                // get session from the json j
+                int session_number = j["session: "];
+                std::string session_s = getSessionType(session_number);
+                // create button with session
+                // size of the button should be less hardcoded
+                if (ImGui::Button(session_s.c_str(), { (float)framebufferWidth - prev_win_size.x - 15, 30}))
+                {
+                    file_to_show = entry.path();
+                }
+                // add button to vector, together with j
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
-
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+            }
+            prev_win_size = ImGui::GetWindowSize();
             ImGui::End();
         }
-
-        // 3. Show another simple window.
-        if (show_another_window)
+        // right window
         {
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
+            if (!data_initialized)
+            {
+                ImGui::SetNextWindowSize(ImVec2(((float)framebufferWidth / 3) * 2, (float)framebufferHeight));
+                ImGui::SetNextWindowPos(ImVec2((float)framebufferWidth / 3, 0));
+                data_initialized = true;
+            }
+            else
+            {
+                ImGui::SetNextWindowSize(ImVec2((float)framebufferWidth - prev_win_size.x, (float)framebufferHeight));
+                ImGui::SetNextWindowPos(ImVec2(prev_win_size.x, 0));
+            }
+            if (!ImGui::Begin("data", NULL, window_flags))
+            {
+                ImGui::End();
+                return 1;
+            }
+            ImGui::Text("Data will come here");
+
+            // this doesnt work... but we are getting very close
+            if (!file_to_show.empty())
+            {
+                ImGui::BeginTable(
+                    "lap data",
+                    5,
+                    0,
+                    { (float)framebufferWidth - prev_win_size.x, (float)framebufferHeight },
+                    (float)framebufferWidth - prev_win_size.x / 5.0f
+                );
+
+                ImGui::TableSetupColumn("Lap");
+                ImGui::TableSetupColumn("Laptime");
+                ImGui::TableSetupColumn("Sector 1");
+                ImGui::TableSetupColumn("Sector 2");
+                ImGui::TableSetupColumn("Sector 3");
+                ImGui::TableHeadersRow();
+                
+                json j = readFromFile(file_to_show);
+                json laps = j["Laps"];
+
+                for (auto& x : laps.items())
+                {
+                    //std::cout << "key: " << x.key() << ", value: " << x.value() << '\n';
+                    json single_lap = x.value();
+                    //std::cout << single_lap.at("laptime: ") << std::endl;
+                    ImGui::TableNextColumn();
+                    int current_lap = single_lap.at("current lap: ");
+                    ImGui::Text("%d", current_lap);
+                    ImGui::TableNextColumn();
+                    int laptime = single_lap.at("laptime: ");
+                    ImGui::Text("%d", laptime);
+                    ImGui::TableNextColumn();
+                    int sector1 = single_lap.at("sector1: ");
+                    ImGui::Text("%d", sector1);
+                    ImGui::TableNextColumn();
+                    int sector2 = single_lap.at("sector2: ");
+                    ImGui::Text("%d", sector2);
+                    ImGui::TableNextColumn();
+                    int sector3 = single_lap.at("sector3: ");
+                    ImGui::Text("%d", sector3);
+                }
+
+                ImGui::EndTable();
+            }
+
+            prev_win_size = ImGui::GetWindowSize();
             ImGui::End();
         }
 

@@ -1,7 +1,8 @@
 #include "SharedFileOut.h"
 #include "sessionData.h"
 
-void SessionData::setSessionData(SPageFileStatic* pfs) {
+void SessionData::setSessionData(SPageFileStatic* pfs, SPageFileGraphic* pfg) {
+    session = pfg->session;
     track = pfs->track;
     carModel = pfs->carModel;
 }

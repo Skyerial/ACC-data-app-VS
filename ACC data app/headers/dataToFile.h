@@ -9,6 +9,10 @@ void openFile(std::wstring file_location);
 
 void closeFile();
 
+json readFromFile(std::wstring file_location);
+
+std::string getSessionType(int session);
+
 void writeToFile(json& j);
 
 void printToFile(std::string name, float value);

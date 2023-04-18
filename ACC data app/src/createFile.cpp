@@ -50,8 +50,8 @@ void newFile(int session, const std::wstring file_type, const std::wstring mydoc
         std::cerr << "not a known session type" << std::endl;
         exit(-1);
     }
-    mydoc_cpy.append(L"\\ACC app data");
-    mydoc_cpy.append(sessionType);
+    mydoc_cpy.append(L"\\ACC app data\\");
+    //mydoc_cpy.append(sessionType);
     mydoc_cpy.append(getTime());
     mydoc_cpy.append(file_type);
 	openFile(mydoc_cpy);
