@@ -19,7 +19,7 @@ std::fstream outfile;
 void openFile(std::wstring file_location) {
 	outfile.open(file_location);
 	if (!outfile.is_open()) {
-		fprintf(stderr, "couldn't open file");
+		fprintf(stderr, "couldn't open file\n");
 		return;
 	}
 }

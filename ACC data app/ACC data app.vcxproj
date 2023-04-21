@@ -28,16 +28,21 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\createFile.cpp" />
     <ClCompile Include="headers\createFile.h" />
+    <ClCompile Include="src\dataAppUI.cpp" />
     <ClCompile Include="src\dataCollector.cpp" />
     <ClCompile Include="src\dataInitDismiss.cpp" />
     <ClCompile Include="headers\dataInitDismiss.h" />
     <ClCompile Include="src\dataToFile.cpp" />
     <ClCompile Include="src\lapData.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sessionData.cpp" />
     <ClCompile Include="src\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\dataAppUI.h" />
+    <ClInclude Include="headers\dataCollector.h" />
     <ClInclude Include="headers\dataToFile.h" />
+    <ClInclude Include="headers\dataUITransfer.h" />
     <ClInclude Include="headers\lapData.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
