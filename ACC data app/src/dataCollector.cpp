@@ -13,7 +13,6 @@
 #include "dataCollector.h"
 #include "dataInitDismiss.h"
 #include "dataToFile.h"
-#include "createFile.h"
 #include "lapData.h"
 #include "sessionData.h"
 #include "SharedFileOut.h"
@@ -78,12 +77,11 @@ void dataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 		if (!newSession) {
 			newSession = true;
 			pair.session_active = false;
-			newFile(lastSessionType, L".json", mydoc_path);
+			std::wstring file_location = newFile(lastSessionType, L".json", mydoc_path);
 			json jLaps = laps;
 			json jSession = session;
 			jSession["Laps"] = jLaps;
-			writeToFile(jSession);
-			closeFile();
+			writeToFile(jSession, file_location);
 		}
 	}
 

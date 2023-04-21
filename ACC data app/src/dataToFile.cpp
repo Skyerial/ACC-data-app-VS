@@ -10,102 +10,80 @@
 
 using json = nlohmann::json;
 
-std::fstream outfile;
-
-// this may be kind of dumb openFile en closeFile
-// figure out if opening a stream can also be used by other files
-// meaning that if I make ofstream outfile in two files that both can read and
-// write to the same file?... 
-void openFile(std::wstring file_location) {
-	outfile.open(file_location);
-	if (!outfile.is_open()) {
-		fprintf(stderr, "couldn't open file\n");
-		return;
-	}
-}
-
-void closeFile() {
-	outfile.close();
-}
-
-void writeToFile(json& j) {
-	outfile << j << "\n";
-}
-
-json readFromFile(std::wstring file_location) {
-	outfile.open(file_location);
-	std::string file_contents((std::istreambuf_iterator<char>(outfile)), (std::istreambuf_iterator<char>()));
-
-	json j = json::parse(file_contents);
-	outfile.close();
-
-	return j;
-}
-
 std::string getSessionType(int session) {
 	std::string sessionType;
 	switch (session) {
-		case -1: sessionType = "UNKOWN"; break;
-		case 0: sessionType = "practise"; break;
-		case 1: sessionType = "qualy"; break;
-		case 2: sessionType = "race"; break;
-		case 3: sessionType = "hotlap"; break;
-		case 4: sessionType = "timeattack"; break;
-		case 5: sessionType = "drift"; break;
-		case 6: sessionType = "drag"; break;
-		case 7: sessionType = "hotstint"; break;
-		case 8: sessionType = "hotlapsuperpole"; break;
-		default:
-			break;
+	case -1: sessionType = "UNKOWN"; break;
+	case 0: sessionType = "practise"; break;
+	case 1: sessionType = "qualy"; break;
+	case 2: sessionType = "race"; break;
+	case 3: sessionType = "hotlap"; break;
+	case 4: sessionType = "timeattack"; break;
+	case 5: sessionType = "drift"; break;
+	case 6: sessionType = "drag"; break;
+	case 7: sessionType = "hotstint"; break;
+	case 8: sessionType = "hotlapsuperpole"; break;
+	default:
+		break;
 	}
 
 	return sessionType;
 }
 
+// Helper function that gets the the current date and time and returns it as a std::wstring
+std::wstring getTime()
+{
+	time_t rawtime;
+	struct tm timeinfo;
+	wchar_t buffer[20];
 
+	time(&rawtime);
+	localtime_s(&timeinfo, &rawtime);
 
+	wcsftime(buffer, 20, L"%Y%m%d%H%M%S", &timeinfo);
 
-
-
-
-
-
-
-
-
-// not sure if these are needed yet....
-void printToFile(std::string name, float value) {
-	outfile << name.c_str() << " : " << value << std::endl;
+	return buffer;
 }
 
-template <typename T, unsigned S>
-inline void printToFile(const std::string name, const T(&v)[S]) {
-	// this is not needed since we want a data file with values without names
-	// order of values is documented
-	// outfile << name.c_str() << " : ";
+// creates the path for the new file, but doesnt open a stream to that location
+std::wstring newFile(int session, const std::wstring file_type, const std::wstring mydoc_path)
+{
+	std::wstring mydoc_cpy;
+	mydoc_cpy.append(mydoc_path);
+	mydoc_cpy.append(L"\\ACC app data\\");
+	mydoc_cpy.append(getTime());
+	mydoc_cpy.append(file_type);
 
-	for (int i = 0; i < S; i++)
+	// testing line
+	std::wcout << mydoc_cpy << std::endl;
+
+	return mydoc_cpy;
+}
+
+json readFromFile(std::wstring file_location) {
+	std::ifstream infile;
+	infile.open(file_location);
+	if (!infile.is_open())
 	{
-		outfile << v[i];
-		if (i < S - 1)
-		{
-			outfile << ", ";
-		}
-
+		fprintf(stderr, "couldn't open file\n");
+		return NULL;
 	}
-	outfile << std::endl;
+	std::string file_contents((std::istreambuf_iterator<char>(infile)), (std::istreambuf_iterator<char>()));
+
+	json j = json::parse(file_contents);
+	infile.close();
+
+	return j;
 }
 
-// This gives values from the asked data as a string to put in the json file
-template <typename T, unsigned S>
-inline std::string actualValue(const T(&v)[S]) {
-	std::string result;
-	for (int i = 0; i < S; i++) {
-		float temp = v[i];
-		result = result + std::to_string(temp);
-		if (i < S - 1) {
-			result = result + " , ";
-		}
+void writeToFile(json& j, std::wstring file_location) {
+	std::ofstream outfile;
+	outfile.open(file_location);
+	if (!outfile.is_open())
+	{
+		fprintf(stderr, "couldn't open file\n");
+		return;
 	}
-	return result;
+	outfile << j << "\n";
+	outfile.close();
 }

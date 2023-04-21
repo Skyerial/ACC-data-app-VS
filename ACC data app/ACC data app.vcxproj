@@ -26,8 +26,6 @@
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\createFile.cpp" />
-    <ClCompile Include="headers\createFile.h" />
     <ClCompile Include="src\dataAppUI.cpp" />
     <ClCompile Include="src\dataCollector.cpp" />
     <ClCompile Include="src\dataInitDismiss.cpp" />
