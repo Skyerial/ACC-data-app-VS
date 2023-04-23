@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string>
 #include <windows.h>
+#include <iostream>
 
 #include "dataUITransfer.h"
 #include "dataAppUI.h"
@@ -20,7 +21,51 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair) {
+// HELPER function: takes int value for time (ie. laptime or sectortime) and makes it into a good looking string
+std::string format_time(int time)
+{
+    using namespace std::chrono;
+    auto ms = milliseconds(time);
+    auto secs = duration_cast<seconds>(ms);
+    ms -= duration_cast<milliseconds>(secs);
+    auto mins = duration_cast<minutes>(secs);
+    secs -= duration_cast<seconds>(mins);
+
+    std::string time_s = std::format("{:02d}:{:02d}:{:03d}", mins.count(), secs.count(), ms.count());
+    return time_s;
+
+    //if (is_date)
+    //{
+    //    auto hour = duration_cast<hours>(mins);
+    //    mins -= duration_cast<minutes>(hour);
+    //    auto day = duration_cast<days>(hour);
+    //    hour -= duration_cast<hours>(day);
+    //    auto month = duration_cast<months>(day);
+    //    day -= duration_cast<days>(month);
+    //    auto year = duration_cast<years>(month);
+    //    month -= duration_cast<months>(year);
+
+    //    //std::string time_s = std::format("{}-{}-{} {}:{}", std::make_format_args(year, month, day, hour, mins));
+    //    //std::cout << time_s << std::endl;
+    //}
+    //else
+    //{
+    //}
+}
+
+std::string format_date(std::string unformatted_date)
+{
+    std::string year = unformatted_date.substr(0, 4);
+    std::string month = unformatted_date.substr(4, 2);
+    std::string day = unformatted_date.substr(6, 2);
+    std::string hour = unformatted_date.substr(8, 2);
+    std::string min = unformatted_date.substr(10, 2);
+
+    return day + "/" + month + "/" + year + " " + hour + ":" + min;
+}
+
+void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
+{
     /////////////////
     // IMGUI stuff //
     /////////////////
@@ -146,11 +191,17 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair) {
                 // read json into json j
                 json j = readFromFile(entry.path());
                 // get session from the json j
-                int session_number = j["session: "];
+                int session_number = j["session"];
                 std::string session_s = getSessionType(session_number);
+
+                // get date as string from filename
+                std::string base_filename = entry.path().string().substr(entry.path().string().find_last_of("/\\") + 1);
+                std::string::size_type const p(base_filename.find_last_of('.'));
+                std::string file_without_extension = base_filename.substr(0, p);
+                std::string clean_date = format_date(file_without_extension);
                 // create button with session
                 // size of the button should be less hardcoded
-                if (ImGui::Button(session_s.c_str(), { (float)framebufferWidth - data_win_size.x - 15, 30 }))
+                if (ImGui::Button((session_s + " " + clean_date).c_str(), {(float)framebufferWidth - data_win_size.x - 15, 30}))
                 {
                     file_to_show = entry.path();
                 }
@@ -185,16 +236,15 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair) {
             {
                 ImGui::Text("Session being recorded");
                 if (live_laps.empty()) // not sure if this is needed, but maybe since back() on empty vector is undefined
-                {
                     live_laps.push_back(pair.lapnumber.load());
-                }
+
                 if (live_laps.back() != pair.lapnumber.load())
-                {
                     live_laps.push_back(pair.lapnumber.load());
-                }
+
                 for (auto i : live_laps)
                 {
-                    ImGui::Text("Completed lap %d", i);
+                    if (i != 0)
+                        ImGui::Text("Completed lap %d", i);
                 }
             }
 
@@ -240,7 +290,7 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair) {
                 ImGui::TableHeadersRow();
 
                 json j = readFromFile(file_to_show);
-                json laps = j["Laps"];
+                json laps = j["laps"];
 
                 for (auto& x : laps.items())
                 {
@@ -248,20 +298,24 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair) {
                     json single_lap = x.value();
                     //std::cout << single_lap.at("laptime: ") << std::endl;
                     ImGui::TableNextColumn();
-                    int current_lap = single_lap.at("current lap: ");
+                    int current_lap = single_lap.at("current lap");
                     ImGui::Text("%d", current_lap);
                     ImGui::TableNextColumn();
-                    int laptime = single_lap.at("laptime: ");
-                    ImGui::Text("%d", laptime);
+                    int laptime = single_lap.at("laptime");
+                    std::string laptime_s = format_time(laptime);
+                    ImGui::Text(laptime_s.c_str());
                     ImGui::TableNextColumn();
-                    int sector1 = single_lap.at("sector1: ");
-                    ImGui::Text("%d", sector1);
+                    int sector1 = single_lap.at("sector1");
+                    std::string sector1_s = format_time(sector1);
+                    ImGui::Text(sector1_s.c_str());
                     ImGui::TableNextColumn();
-                    int sector2 = single_lap.at("sector2: ");
-                    ImGui::Text("%d", sector2);
+                    int sector2 = single_lap.at("sector2");
+                    std::string sector2_s = format_time(sector2);
+                    ImGui::Text(sector2_s.c_str());
                     ImGui::TableNextColumn();
-                    int sector3 = single_lap.at("sector3: ");
-                    ImGui::Text("%d", sector3);
+                    int sector3 = single_lap.at("sector3");
+                    std::string sector3_s = format_time(sector3);
+                    ImGui::Text(sector3_s.c_str());
                 }
 
                 ImGui::EndTable();

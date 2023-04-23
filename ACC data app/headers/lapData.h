@@ -9,14 +9,24 @@ class LapData
 {
 private:
     int currentLap;
-    int validLap;
-    wchar_t* wLapTime;
+    int validLap;       // not implemented yet
     int laptime;        // in miliseconds
     int sector1;        // ^
     int sector2;        // ^
     int sector3;        // ^
 
 public:
+    // constructor
+    LapData() 
+    {
+        currentLap = 0;
+        validLap = 0;
+        laptime = 0;
+        sector1 = 0;
+        sector2 = 0;
+        sector3 = 0;
+    };
+
     int getLapNumber() { return currentLap; }
     int getLapTime() { return laptime; }
     int getSector1() { return sector1; }
@@ -29,11 +39,11 @@ public:
 
     // JSON stuff
     friend void to_json(json& j, const LapData& ld) {
-        j["current lap: "] = ld.currentLap;
-        j["laptime: "] = ld.laptime;
-        j["sector1: "] = ld.sector1;
-        j["sector2: "] = ld.sector2;
-        j["sector3: "] = ld.sector3;
+        j["current lap"] = ld.currentLap;
+        j["laptime"] = ld.laptime;
+        j["sector1"] = ld.sector1;
+        j["sector2"] = ld.sector2;
+        j["sector3"] = ld.sector3;
     }
 
     // TESTING

@@ -21,10 +21,10 @@ public:
     void setBestLap();
 
     friend void to_json(json& j, SessionData data) {
-        j["session: "] = data.session;
-        j["track: "] = data.track;
-        j["car: "] = data.carModel;
-        j["best lap: "] = data.bestLap;
+        j["session"] = data.session;
+        j["track"] = data.track;
+        j["car"] = data.carModel;
+        j["best lap"] = data.bestLap;
     }
 
     void print();

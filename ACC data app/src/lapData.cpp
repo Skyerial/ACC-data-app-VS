@@ -7,7 +7,7 @@
 #include <iostream>
 
 void LapData::setLapNumber(SPageFileGraphic* pfg) {
-    currentLap = pfg->completedLaps + 1;
+    currentLap = pfg->completedLaps;
 }
 
 void LapData::setLapTimeValid(SPageFileGraphic* pfg) {
@@ -51,12 +51,11 @@ std::vector<LapData> updateLap(SPageFileGraphic* pfg, std::vector<LapData> laps)
     // if empty we cannot compare yet to last lap
     if (laps.empty()) {
         LapData current;
-        current.setLapNumber(pfg);
         laps.push_back(current);
-    } else if (pfg->completedLaps >= laps.back().getLapNumber()) {
+    } else if (pfg->completedLaps - 1 >= laps.back().getLapNumber()) {
         laps.back().setLapTimeValid(pfg);
         laps.back().addCurrentSectorTime(pfg);
-
+        laps.back().setLapNumber(pfg);
         LapData current;
         current.setLapNumber(pfg);
         laps.push_back(current);
