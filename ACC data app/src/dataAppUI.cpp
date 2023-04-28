@@ -246,6 +246,7 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
                     if (i != 0)
                         ImGui::Text("Completed lap %d", i);
                 }
+                ImGui::SetScrollHereY();
             }
 
             live_win_size = ImGui::GetWindowSize();
@@ -339,6 +340,9 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
         // end IMGUI stuff //
         /////////////////////
     }
+
+    // signal collector that we are shutting down
+    pair.UI_running = false;
 
     // cleanup IMGUI
     ImGui_ImplOpenGL3_Shutdown();

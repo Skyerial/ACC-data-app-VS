@@ -16,6 +16,7 @@ HRESULT hres = SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT
 int main(int argc, char* argv[])
 {
 	ui_data_pair pair;
+	pair.UI_running = true;
 	pair.lapnumber = 0;
 	pair.session_active = false;
 

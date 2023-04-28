@@ -46,7 +46,7 @@ void dataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 	AC_SESSION_TYPE lastSessionType = AC_UNKNOWN;
 	bool newSession = true;
 
-	while(true) {
+	while(pair.UI_running) {
 		std::vector<LapData> laps = createLaps();
 		SessionData session;
 		// 2 means session is running, 3 session running but in esc menu
