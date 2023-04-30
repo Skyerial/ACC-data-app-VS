@@ -232,14 +232,17 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
             }
             ImGui::Text("live data will be displayed here");
 
-            if (pair.session_active)
+            if (pair.session_active || !live_laps.empty())
             {
                 ImGui::Text("Session being recorded");
                 if (live_laps.empty()) // not sure if this is needed, but maybe since back() on empty vector is undefined
                     live_laps.push_back(pair.lapnumber.load());
 
-                if (live_laps.back() != pair.lapnumber.load())
+                if (live_laps.back() < pair.lapnumber.load())
                     live_laps.push_back(pair.lapnumber.load());
+
+                if (live_laps.back() > pair.lapnumber.load())
+                    live_laps.clear();
 
                 for (auto i : live_laps)
                 {

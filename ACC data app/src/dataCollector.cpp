@@ -78,10 +78,17 @@ void dataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 			newSession = true;
 			pair.session_active = false;
 			std::wstring file_location = newFile(lastSessionType, L".json", mydoc_path);
-			json jLaps = laps;
-			json jSession = session;
-			jSession["laps"] = jLaps;
-			writeToFile(jSession, file_location);
+
+			if (laps.size() > 1)
+			{
+				if (laps.back().getLapNumber() == laps[laps.size() - 2].getLapNumber())
+					laps.pop_back();
+
+				json jLaps = laps;
+				json jSession = session;
+				jSession["laps"] = jLaps;
+				writeToFile(jSession, file_location);
+			}
 		}
 	}
 
