@@ -1,12 +1,14 @@
-#include "stdafx.h"
+#include "dataInitDismiss.h"
+
 #include <windows.h>
 #include <tchar.h>
+
 #include <iostream>
+
+#include "stdafx.h"
 #include "SharedFileOut.h"
 
-#include "dataInitDismiss.h"
 //#pragma optimize("",off)
-
 
 void initPhysics()
 {

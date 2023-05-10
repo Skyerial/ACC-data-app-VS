@@ -1,16 +1,16 @@
-#include "stdafx.h"
 #include "dataToFile.h"
-#include "nlohmann\json.hpp"
-#include "lapData.h"
 
 #include <fstream>
-
-// test
 #include <iostream>
+
+#include "nlohmann\json.hpp"
+
+#include "stdafx.h"
+#include "lapData.h"
 
 using json = nlohmann::json;
 
-std::string getSessionType(int session) {
+std::string GetSessionType(int session) {
 	std::string sessionType;
 	switch (session) {
 	case -1: sessionType = "UNKOWN"; break;
@@ -31,7 +31,9 @@ std::string getSessionType(int session) {
 }
 
 // Helper function that gets the the current date and time and returns it as a std::wstring
-std::wstring getTime()
+// Static since it is a helper function
+// This should also make it local to this translation unit
+static std::wstring GetTime()
 {
 	time_t rawtime;
 	struct tm timeinfo;
@@ -46,21 +48,22 @@ std::wstring getTime()
 }
 
 // creates the path for the new file, but doesnt open a stream to that location
-std::wstring newFile(int session, const std::wstring file_type, const std::wstring mydoc_path)
+std::wstring NewFile(int session, const std::wstring file_type, const std::wstring mydoc_path)
 {
 	std::wstring mydoc_cpy;
 	mydoc_cpy.append(mydoc_path);
 	mydoc_cpy.append(L"\\ACC app data\\");
-	mydoc_cpy.append(getTime());
+	mydoc_cpy.append(GetTime());
 	mydoc_cpy.append(file_type);
 
-	// testing line
+#ifdef DEBUG
 	std::wcout << mydoc_cpy << std::endl;
+#endif // DEBUG
 
 	return mydoc_cpy;
 }
 
-json readFromFile(std::wstring file_location) {
+json ReadFromFile(std::wstring file_location) {
 	std::ifstream infile;
 	infile.open(file_location);
 	if (!infile.is_open())
@@ -76,7 +79,7 @@ json readFromFile(std::wstring file_location) {
 	return j;
 }
 
-void writeToFile(json& j, std::wstring file_location) {
+void WriteToFile(json& j, std::wstring file_location) {
 	std::ofstream outfile;
 	outfile.open(file_location);
 	if (!outfile.is_open())

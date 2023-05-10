@@ -1,16 +1,17 @@
 #include "SharedFileOut.h"
 #include "sessionData.h"
 
-void SessionData::setSessionData(SPageFileStatic* pfs, SPageFileGraphic* pfg) {
+void SessionData::SetSessionData(SPageFileStatic* pfs, SPageFileGraphic* pfg) {
     session = pfg->session;
     track = pfs->track;
     carModel = pfs->carModel;
 }
 
-void SessionData::setBestLap() {
-
+// This function is slightly useless still
+void SessionData::SetBestLap() {
+    return;
 }
 
-void SessionData::print() {
+void SessionData::Print() {
     printf("%ls\n%ls\n%d\n", track, carModel, bestLap);
 }

@@ -33,9 +33,9 @@ public:
     int getSector2() { return sector2; }
     int getSector3() { return sector3; }
 
-    void setLapNumber(SPageFileGraphic* pfg);
-    void setLapTimeValid(SPageFileGraphic* pfg);
-    void addCurrentSectorTime(SPageFileGraphic* pfg);
+    void SetLapNumber(SPageFileGraphic* pfg);
+    void SetLapTimeValid(SPageFileGraphic* pfg);
+    void AddCurrentSectorTime(SPageFileGraphic* pfg);
 
     // JSON stuff
     friend void to_json(json& j, const LapData& ld) {
@@ -47,9 +47,9 @@ public:
     }
 
     // TESTING
-    void print();
+    void Print();
 };
 
-std::vector<LapData> createLaps();
+std::vector<LapData> CreateLaps();
 
-std::vector<LapData> updateLap(SPageFileGraphic* pfg, std::vector<LapData> laps);
+void UpdateLap(SPageFileGraphic* pfg, std::vector<LapData>& laps);

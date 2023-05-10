@@ -17,8 +17,8 @@ public:
     wchar_t* getCarModel() { return carModel; }
     int getBestLap() { return bestLap; }
 
-    void setSessionData(SPageFileStatic* pfs, SPageFileGraphic* pfg);
-    void setBestLap();
+    void SetSessionData(SPageFileStatic* pfs, SPageFileGraphic* pfg);
+    void SetBestLap();
 
     friend void to_json(json& j, SessionData data) {
         j["session"] = data.session;
@@ -27,5 +27,5 @@ public:
         j["best lap"] = data.bestLap;
     }
 
-    void print();
+    void Print();
 };

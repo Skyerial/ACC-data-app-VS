@@ -1,23 +1,26 @@
-// The first include is needed for the precompiled header file which makes 
-// sure that all the cpp files that have includes in this header file as well 
-// dont need to have their header files compiled again. This in the end brings a
-// speed boost to compiling.
-#include "stdafx.h"
+// .h of this .cpp
+#include "dataUITransfer.h" // ui_data_pair
+#include "dataCollector.h"
+
+// C system headers
 #include <windows.h>
+
+// C++ standard library headers
 #include <iostream>
 #include <string>
 
+// Other libraries
+#include "nlohmann/json.hpp"
+
+// Own .h
 // use "" for header files in project folder, <> is used for headers that are 
 // outside of project folder
-#include "dataUITransfer.h"
-#include "dataCollector.h"
+#include "stdafx.h"
 #include "dataInitDismiss.h"
 #include "dataToFile.h"
 #include "lapData.h"
 #include "sessionData.h"
 #include "SharedFileOut.h"
-
-#include "nlohmann/json.hpp"
 
 using json = nlohmann::json;
 
@@ -32,7 +35,7 @@ using json = nlohmann::json;
 
 // pair is the struct that is used to transfer data between ui and data to show
 // that data is being gathered when a session is active
-void dataCollector(std::wstring mydoc_path, ui_data_pair& pair)
+void DataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 {
 	initPhysics();
 	initGraphics();
@@ -46,8 +49,8 @@ void dataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 	AC_SESSION_TYPE lastSessionType = AC_UNKNOWN;
 	bool newSession = true;
 
-	while(pair.UI_running) {
-		std::vector<LapData> laps = createLaps();
+	while(pair.UI_running) { 
+		std::vector<LapData> laps = CreateLaps();
 		SessionData session;
 		// 2 means session is running, 3 session running but in esc menu
 		// this also means nothing happens when neither is true since it returns 0
@@ -58,7 +61,7 @@ void dataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 				newSession = false;
 				pair.session_active = true;
 				lastSessionType = pfg->session;
-				session.setSessionData(pfs, pfg);
+				session.SetSessionData(pfs, pfg);
 				//std::cout << "new session started" << std::endl;
 			}
 			// break out of session loop when a session changes
@@ -69,7 +72,7 @@ void dataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 			// also if new session type starts), time of day at start, car model,
 			// track and multiplayer or singleplayer
 			// std::cout << pfg->iLastTime << '\n';
-			laps = updateLap(pfg, laps);
+			UpdateLap(pfg, laps);
 			pair.lapnumber = laps.back().getLapNumber(); // this feels slightly ulgly but oh well
 			Sleep(100); // in miliseconds, tickrate is 10Hz
 		}
@@ -77,7 +80,7 @@ void dataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 		if (!newSession) {
 			newSession = true;
 			pair.session_active = false;
-			std::wstring file_location = newFile(lastSessionType, L".json", mydoc_path);
+			std::wstring file_location = NewFile(lastSessionType, L".json", mydoc_path);
 
 			if (laps.size() > 1)
 			{
@@ -87,7 +90,7 @@ void dataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 				json jLaps = laps;
 				json jSession = session;
 				jSession["laps"] = jLaps;
-				writeToFile(jSession, file_location);
+				WriteToFile(jSession, file_location);
 			}
 		}
 	}

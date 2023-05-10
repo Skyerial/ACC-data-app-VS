@@ -1,3 +1,5 @@
+#include <ShlObj.h>
+
 #include <thread>
 
 #include "dataUITransfer.h"
@@ -6,7 +8,6 @@
 
 // include needed to get full path of documents folder
 // #include <C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um\\ShlObj_core.h>
-#include <ShlObj.h>
 
 // get full path of known windows document folder
 // maybe a bit of an old way to do this, but it works
@@ -23,7 +24,7 @@ int main(int argc, char* argv[])
 	// since we only use two threads atm there no need to make a vector threadpool
 	// this is good to do once we add more threads tho
 	std::jthread ui_thread(UIRenderer, mydoc_path, std::ref(pair));
-	std::jthread data_thread(dataCollector, mydoc_path, std::ref(pair));
+	std::jthread data_thread(DataCollector, mydoc_path, std::ref(pair));
 
 	ui_thread.join();
 	data_thread.join();
