@@ -1,3 +1,12 @@
+//////////////////////////////////////////////////////////////////////////////
+// Author: Daniel Oppenhuizen
+// License: None
+// 
+// This file is responsible for listening in on the shared memory and
+// collecting all the right data from it. This then gets stored in a file that
+// can be used by dataAppUI.
+//////////////////////////////////////////////////////////////////////////////
+
 // .h of this .cpp
 #include "dataUITransfer.h" // ui_data_pair
 #include "dataCollector.h"
@@ -93,6 +102,8 @@ void DataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 				WriteToFile(jSession, file_location);
 			}
 		}
+
+		Sleep(100);
 	}
 
 	// end of main, needs to be made to run as long as the application is open.

@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////////////////////////
+// Author: Daniel Oppenhuizen
+// License: None
+// 
+// Main file, here all the seperate threads get created, along with the
+// medium for them to share information.
+//////////////////////////////////////////////////////////////////////////////
+
 #include <ShlObj.h>
 
 #include <thread>
@@ -16,6 +24,8 @@ HRESULT hres = SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT
 
 int main(int argc, char* argv[])
 {
+	if (hres != S_OK) { return 1; } // check if my document path was actually found
+	
 	ui_data_pair pair;
 	pair.UI_running = true;
 	pair.lapnumber = 0;

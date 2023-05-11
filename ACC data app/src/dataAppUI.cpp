@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////////////////////////
+// Author: Daniel Oppenhuizen
+// License: None
+// 
+// This file is responsible for the rendering of the app window and its
+// subwindows within it.
+//////////////////////////////////////////////////////////////////////////////
+
 // .h of this .cpp
 #include "dataUITransfer.h" // ui_data_pair
 #include "dataAppUI.h"
@@ -285,7 +293,7 @@ namespace {
         win_state.data_win_size = ImGui::GetWindowSize();
         ImGui::End();
     }
-} // END of anonymous namespace
+} // anonymous namespace
 
 
 void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)

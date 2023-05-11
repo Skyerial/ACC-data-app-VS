@@ -1,3 +1,12 @@
+//////////////////////////////////////////////////////////////////////////////
+// Author: Daniel Oppenhuizen
+// License: None
+// 
+// Implementation of functions declared in the LapData class. It also contains
+// the function that is responsible for updating the in the laps vector if
+// dataCollector.cpp asks it to do so.
+//////////////////////////////////////////////////////////////////////////////
+
 #include "lapData.h"
 
 #include <memory>

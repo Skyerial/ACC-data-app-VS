@@ -5,6 +5,12 @@
 
 using json = nlohmann::json;
 
+// This class is used to keep all the data of lap together. So the intend is
+// to create a new object for every lap and make sure all the data of that lap is
+// stored in that object.
+//
+// It also has functions to change the values of the lap object when new 
+// information for that lap becomes available.
 class LapData
 {
 private:
@@ -52,4 +58,7 @@ public:
 
 std::vector<LapData> CreateLaps();
 
+// UpdateLap gets the right memory location to check for data that is available.
+// Once it sees that there is new information is available for the given lap
+// it updates that lap.
 void UpdateLap(SPageFileGraphic* pfg, std::vector<LapData>& laps);

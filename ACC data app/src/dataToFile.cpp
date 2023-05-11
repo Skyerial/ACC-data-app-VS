@@ -1,3 +1,12 @@
+//////////////////////////////////////////////////////////////////////////////
+// Author: Daniel Oppenhuizen
+// License: None
+// 
+// This file is responsible for creating files with the right name, opening 
+// files and parsing its input so the program can use it. Furthermore it also
+// stores the data to the file.
+//////////////////////////////////////////////////////////////////////////////
+
 #include "dataToFile.h"
 
 #include <fstream>

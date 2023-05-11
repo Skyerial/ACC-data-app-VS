@@ -3,6 +3,10 @@
 
 using json = nlohmann::json;
 
+// This class is used to keep all the session related data together. The intend
+// is to create an object of this class when the session starts, gather all the
+// wanted data and store it. After that the object only gets saved when the
+// session ends. The object data shouldn't be changed at any other point.
 class SessionData
 {
 private:
