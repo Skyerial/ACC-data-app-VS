@@ -1,6 +1,14 @@
 #pragma once
 #include <string>
 
+enum ActiveWindow : int {
+	Progression_window,
+	Sessions_window,
+	Best_combo_window,
+	Stats_car_track_window,
+	Fuel_window,
+};
+
 // Function is responsible for rendering the UI.
 // Input:
 //	mydoc_path = string that contains path to the my documents folder

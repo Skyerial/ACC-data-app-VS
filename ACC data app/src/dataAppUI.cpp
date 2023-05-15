@@ -31,6 +31,16 @@
 
 using json = nlohmann::json;
 
+ActiveWindow active_window = Sessions_window; // This is the window that is open
+                                              // when the app starts up
+std::string active_window_strings[] = {
+    "Progression",
+    "Sessions",
+    "Car/Track combo",
+    "Stats",
+    "Fuel"
+};
+
 // Anonymous namespace used instead of static for local functions and types, 
 // since static cant be used to make types local in a translation unit
 namespace {
@@ -42,8 +52,8 @@ namespace {
         bool show_demo_window;
         bool show_another_window;
         bool menu_initialized;
-        bool data_initialized;
         bool live_initialized;
+        bool data_initialized;
         ImVec2 menu_win_size;
         ImVec2 data_win_size;
         ImVec2 live_win_size;
@@ -60,8 +70,8 @@ namespace {
         win_state.show_demo_window = false;
         win_state.show_another_window = false;
         win_state.menu_initialized = false;
-        win_state.data_initialized = false;
         win_state.live_initialized = false;
+        win_state.data_initialized = false;
 
         win_state.menu_win_size = { 0,0 };
         win_state.data_win_size = { 0,0 };
@@ -118,7 +128,7 @@ namespace {
     {
         if (!win_state.menu_initialized)
         {
-            ImGui::SetNextWindowSize(ImVec2((float)framebufferWidth / 3, ((float)framebufferHeight / 3) * 2));
+            ImGui::SetNextWindowSize(ImVec2((float)framebufferWidth / 3, (float)framebufferHeight / 3));
             ImGui::SetNextWindowPos(ImVec2(0, 0));
             win_state.menu_initialized = true;
         }
@@ -134,33 +144,49 @@ namespace {
         }
         ImGui::Text("Menu will come here");
 
-        // should read the files only once and create buttons again and again
-        // data of files stored in vector of j...
-        // if we would do that then we wouldnt need to read the files twice...
-        std::wstring data_folder = L"\\ACC app data";
-        std::wstring path = mydoc_path + data_folder;
-        for (const auto& entry : std::filesystem::directory_iterator(path))
+        for (int i = 0; i < 5; i++)
         {
-            // read json into json j
-            json j = ReadFromFile(entry.path());
-            // get session from the json j
-            int session_number = j["session"];
-            std::string session_s = GetSessionType(session_number);
-
-            // get date as string from filename
-            std::string base_filename = entry.path().string().substr(entry.path().string().find_last_of("/\\") + 1);
-            std::string::size_type const p(base_filename.find_last_of('.'));
-            std::string file_without_extension = base_filename.substr(0, p);
-            std::string clean_date = FormatDate(file_without_extension);
-            // create button with session
-            // size of the button should be less hardcoded
-            if (ImGui::Button((session_s + " " + clean_date).c_str(), { (float)framebufferWidth - win_state.data_win_size.x - 15, 30 }))
+            bool k = false;
+            if (i == active_window)
             {
-                win_state.file_to_show = entry.path();
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.51f, 0.13f, 0.13f, 1.0f });
+                k = true;
             }
-            // add button to vector, together with j
+            
+            if (ImGui::Button(active_window_strings[i].c_str(), { (float)framebufferWidth - win_state.data_win_size.x - 15, 30 }))
+                active_window = (ActiveWindow)i;
 
+            if (k)
+                ImGui::PopStyleColor(1);
         }
+
+        //// should read the files only once and create buttons again and again
+        //// data of files stored in vector of j...
+        //// if we would do that then we wouldnt need to read the files twice...
+        //std::wstring data_folder = L"\\ACC app data";
+        //std::wstring path = mydoc_path + data_folder;
+        //for (const auto& entry : std::filesystem::directory_iterator(path))
+        //{
+        //    // read json into json j
+        //    json j = ReadFromFile(entry.path());
+        //    // get session from the json j
+        //    int session_number = j["session"];
+        //    std::string session_s = GetSessionType(session_number);
+
+        //    // get date as string from filename
+        //    std::string base_filename = entry.path().string().substr(entry.path().string().find_last_of("/\\") + 1);
+        //    std::string::size_type const p(base_filename.find_last_of('.'));
+        //    std::string file_without_extension = base_filename.substr(0, p);
+        //    std::string clean_date = FormatDate(file_without_extension);
+        //    // create button with session
+        //    // size of the button should be less hardcoded
+        //    if (ImGui::Button((session_s + " " + clean_date).c_str(), { (float)framebufferWidth - win_state.data_win_size.x - 15, 30 }))
+        //    {
+        //        win_state.file_to_show = entry.path();
+        //    }
+        //    // add button to vector, together with j
+        // 
+        //}
         win_state.menu_win_size = ImGui::GetWindowSize();
         ImGui::End();
     }
@@ -172,7 +198,7 @@ namespace {
     {
         if (!win_state.live_initialized)
         {
-            ImGui::SetNextWindowSize(ImVec2((float)framebufferWidth / 3, (float)framebufferHeight / 3));
+            ImGui::SetNextWindowSize(ImVec2((float)framebufferWidth / 3, ((float)framebufferHeight / 3) * 2));
             ImGui::SetNextWindowPos(ImVec2(0, ((float)framebufferHeight / 3) * 2));
             win_state.live_initialized = true;
         }
@@ -220,7 +246,7 @@ namespace {
     //////////////////////////////////////////////////////////////////////////////
     // Bottom left window: MAIN
     //////////////////////////////////////////////////////////////////////////////
-    void RenderMainWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
+    void SetMainWindowSize(WinState& win_state, int framebufferWidth, int framebufferHeight)
     {
         if (!win_state.data_initialized)
         {
@@ -238,7 +264,21 @@ namespace {
             ImGui::End();
             return;
         }
-        ImGui::Text("Data will come here");
+    }
+
+    void RenderProgressionWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
+    {
+        SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
+        ImGui::Text("Progression window");
+
+        win_state.data_win_size = ImGui::GetWindowSize();
+        ImGui::End();
+    }
+
+    void RenderSessionWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
+    {
+        SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
+        ImGui::Text("Session window");
 
         // this doesnt work... but we are getting very close
         if (!win_state.file_to_show.empty())
@@ -292,6 +332,59 @@ namespace {
 
         win_state.data_win_size = ImGui::GetWindowSize();
         ImGui::End();
+    }
+
+    void RenderComboWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
+    {
+        SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
+        ImGui::Text("Combo window");
+
+        win_state.data_win_size = ImGui::GetWindowSize();
+        ImGui::End();
+    }
+
+    void RenderStatsWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
+    {
+        SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
+        ImGui::Text("Stats window");
+
+        win_state.data_win_size = ImGui::GetWindowSize();
+        ImGui::End();
+    }
+
+    void RenderFuelWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
+    {
+        SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
+        ImGui::Text("Fuel window");
+
+        win_state.data_win_size = ImGui::GetWindowSize();
+        ImGui::End();
+    }
+
+    void RenderMainWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
+    {
+        // Render the right window based on the set active window
+        std::cout << active_window_strings[active_window] << std::endl;
+        switch (active_window)
+        {
+        case Progression_window:
+            RenderProgressionWindow(win_state, framebufferWidth, framebufferHeight);
+            break;
+        case Sessions_window:
+            RenderSessionWindow(win_state, framebufferWidth, framebufferHeight);
+            break;
+        case Best_combo_window:
+            RenderComboWindow(win_state, framebufferWidth, framebufferHeight);
+            break;
+        case Stats_car_track_window:
+            RenderStatsWindow(win_state, framebufferWidth, framebufferHeight);
+            break;
+        case Fuel_window:
+            RenderFuelWindow(win_state, framebufferWidth, framebufferHeight);
+            break;
+        default:
+            break;
+        }
     }
 } // anonymous namespace
 
@@ -388,11 +481,6 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        /*if (show_demo_window) {
-            ImGui::ShowDemoWindow(&show_demo_window);
-        }*/
-
         // 2.5 our own created windows
         int framebufferWidth, framebufferHeight;
         glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
@@ -405,6 +493,10 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
 
         // right window
         RenderMainWindow(win_state, framebufferWidth, framebufferHeight);
+
+        if (win_state.show_demo_window) {
+            ImGui::ShowDemoWindow(&win_state.show_demo_window);
+        }
 
         // Rendering
         ImGui::Render();
