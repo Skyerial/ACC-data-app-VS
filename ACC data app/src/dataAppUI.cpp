@@ -62,12 +62,12 @@ namespace {
         std::vector<int> live_laps;
 
         ImGuiWindowFlags window_flags;
-        std::wstring file_to_show;
+        std::wstring file_to_show;      // not used atm..
     };
 
     void InitializeState(WinState& win_state)
     {
-        win_state.show_demo_window = false;
+        win_state.show_demo_window = true;
         win_state.show_another_window = false;
         win_state.menu_initialized = false;
         win_state.live_initialized = false;
@@ -149,7 +149,7 @@ namespace {
             bool k = false;
             if (i == active_window)
             {
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.51f, 0.13f, 0.13f, 1.0f });
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.04f, 0.10f, 0.25f, 1.0f });
                 k = true;
             }
             
@@ -160,33 +160,6 @@ namespace {
                 ImGui::PopStyleColor(1);
         }
 
-        //// should read the files only once and create buttons again and again
-        //// data of files stored in vector of j...
-        //// if we would do that then we wouldnt need to read the files twice...
-        //std::wstring data_folder = L"\\ACC app data";
-        //std::wstring path = mydoc_path + data_folder;
-        //for (const auto& entry : std::filesystem::directory_iterator(path))
-        //{
-        //    // read json into json j
-        //    json j = ReadFromFile(entry.path());
-        //    // get session from the json j
-        //    int session_number = j["session"];
-        //    std::string session_s = GetSessionType(session_number);
-
-        //    // get date as string from filename
-        //    std::string base_filename = entry.path().string().substr(entry.path().string().find_last_of("/\\") + 1);
-        //    std::string::size_type const p(base_filename.find_last_of('.'));
-        //    std::string file_without_extension = base_filename.substr(0, p);
-        //    std::string clean_date = FormatDate(file_without_extension);
-        //    // create button with session
-        //    // size of the button should be less hardcoded
-        //    if (ImGui::Button((session_s + " " + clean_date).c_str(), { (float)framebufferWidth - win_state.data_win_size.x - 15, 30 }))
-        //    {
-        //        win_state.file_to_show = entry.path();
-        //    }
-        //    // add button to vector, together with j
-        // 
-        //}
         win_state.menu_win_size = ImGui::GetWindowSize();
         ImGui::End();
     }
@@ -275,59 +248,79 @@ namespace {
         ImGui::End();
     }
 
-    void RenderSessionWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
+    void RenderSessionWindow(WinState& win_state, std::wstring mydoc_path, int framebufferWidth, int framebufferHeight)
     {
         SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
         ImGui::Text("Session window");
 
-        // this doesnt work... but we are getting very close
-        if (!win_state.file_to_show.empty())
+        // should read the files only once and create buttons again and again
+        // data of files stored in vector of j...
+        // if we would do that then we wouldnt need to read the files twice...
+        std::wstring data_folder = L"\\ACC app data";
+        std::wstring path = mydoc_path + data_folder;
+        for (const auto& entry : std::filesystem::directory_iterator(path))
         {
-            ImGui::BeginTable(
-                "lap data",
-                5,
-                0,
-                { (float)framebufferWidth - win_state.menu_win_size.x, (float)framebufferHeight },
-                (float)framebufferWidth - win_state.menu_win_size.x / 5.0f
-            );
+            // read json into json j
+            json j = ReadFromFile(entry.path());
+            // get session from the json j
+            int session_number = j["session"];
+            std::string session_s = GetSessionType(session_number);
 
-            ImGui::TableSetupColumn("Lap");
-            ImGui::TableSetupColumn("Laptime");
-            ImGui::TableSetupColumn("Sector 1");
-            ImGui::TableSetupColumn("Sector 2");
-            ImGui::TableSetupColumn("Sector 3");
-            ImGui::TableHeadersRow();
-
-            json j = ReadFromFile(win_state.file_to_show);
-            json laps = j["laps"];
-
-            for (auto& x : laps.items())
+            // get date as string from filename
+            std::string base_filename = entry.path().string().substr(entry.path().string().find_last_of("/\\") + 1);
+            std::string::size_type const p(base_filename.find_last_of('.'));
+            std::string file_without_extension = base_filename.substr(0, p);
+            std::string clean_date = FormatDate(file_without_extension);
+            // create button with session
+            // size of the button should be less hardcoded
+            if (ImGui::CollapsingHeader((session_s + " " + clean_date).c_str()))
             {
-                //std::cout << "key: " << x.key() << ", value: " << x.value() << '\n';
-                json single_lap = x.value();
-                //std::cout << single_lap.at("laptime: ") << std::endl;
-                ImGui::TableNextColumn();
-                int current_lap = single_lap.at("current lap");
-                ImGui::Text("%d", current_lap);
-                ImGui::TableNextColumn();
-                int laptime = single_lap.at("laptime");
-                std::string laptime_s = FormatTime(laptime);
-                ImGui::Text(laptime_s.c_str());
-                ImGui::TableNextColumn();
-                int sector1 = single_lap.at("sector1");
-                std::string sector1_s = FormatTime(sector1);
-                ImGui::Text(sector1_s.c_str());
-                ImGui::TableNextColumn();
-                int sector2 = single_lap.at("sector2");
-                std::string sector2_s = FormatTime(sector2);
-                ImGui::Text(sector2_s.c_str());
-                ImGui::TableNextColumn();
-                int sector3 = single_lap.at("sector3");
-                std::string sector3_s = FormatTime(sector3);
-                ImGui::Text(sector3_s.c_str());
-            }
+                ImGui::BeginTable(
+                    "lap data",
+                    5,
+                    ImGuiTableFlags_RowBg,
+                    { (float)framebufferWidth - win_state.menu_win_size.x, (float)framebufferHeight },
+                    (float)framebufferWidth - win_state.menu_win_size.x / 5.0f
+                );
 
-            ImGui::EndTable();
+                ImGui::TableSetupColumn("Lap");
+                ImGui::TableSetupColumn("Laptime");
+                ImGui::TableSetupColumn("Sector 1");
+                ImGui::TableSetupColumn("Sector 2");
+                ImGui::TableSetupColumn("Sector 3");
+                ImGui::TableHeadersRow();
+
+                json j = ReadFromFile(entry.path());
+                json laps = j["laps"];
+
+                for (auto& x : laps.items())
+                {
+                    //std::cout << "key: " << x.key() << ", value: " << x.value() << '\n';
+                    json single_lap = x.value();
+                    //std::cout << single_lap.at("laptime: ") << std::endl;
+                    ImGui::TableNextColumn();
+                    int current_lap = single_lap.at("current lap");
+                    ImGui::Text("%d", current_lap);
+                    ImGui::TableNextColumn();
+                    int laptime = single_lap.at("laptime");
+                    std::string laptime_s = FormatTime(laptime);
+                    ImGui::Text(laptime_s.c_str());
+                    ImGui::TableNextColumn();
+                    int sector1 = single_lap.at("sector1");
+                    std::string sector1_s = FormatTime(sector1);
+                    ImGui::Text(sector1_s.c_str());
+                    ImGui::TableNextColumn();
+                    int sector2 = single_lap.at("sector2");
+                    std::string sector2_s = FormatTime(sector2);
+                    ImGui::Text(sector2_s.c_str());
+                    ImGui::TableNextColumn();
+                    int sector3 = single_lap.at("sector3");
+                    std::string sector3_s = FormatTime(sector3);
+                    ImGui::Text(sector3_s.c_str());
+                }
+
+                ImGui::EndTable();
+            }
         }
 
         win_state.data_win_size = ImGui::GetWindowSize();
@@ -361,17 +354,17 @@ namespace {
         ImGui::End();
     }
 
-    void RenderMainWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
+    void RenderMainWindow(WinState& win_state, std::wstring mydoc_path, int framebufferWidth, int framebufferHeight)
     {
         // Render the right window based on the set active window
-        std::cout << active_window_strings[active_window] << std::endl;
+        // std::cout << active_window_strings[active_window] << std::endl;
         switch (active_window)
         {
         case Progression_window:
             RenderProgressionWindow(win_state, framebufferWidth, framebufferHeight);
             break;
         case Sessions_window:
-            RenderSessionWindow(win_state, framebufferWidth, framebufferHeight);
+            RenderSessionWindow(win_state, mydoc_path, framebufferWidth, framebufferHeight);
             break;
         case Best_combo_window:
             RenderComboWindow(win_state, framebufferWidth, framebufferHeight);
@@ -442,24 +435,6 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
     // Our state
     WinState win_state;
     InitializeState(win_state);
-
-    /*bool show_demo_window = true;
-    bool show_another_window = false;
-    bool menu_initialized = false;
-    bool data_initialized = false;
-    bool live_initialized = false;
-    ImVec2 menu_win_size = { 0, 0 };
-    ImVec2 data_win_size = { 0, 0 };
-    ImVec2 live_win_size = { 0, 0 };
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-    std::vector<int> live_laps;
-
-    ImGuiWindowFlags window_flags = 0;
-    window_flags |= ImGuiWindowFlags_NoTitleBar;
-    window_flags |= ImGuiWindowFlags_NoMove;
-
-    std::wstring file_to_show = L"";*/
     /////////////////////
     // end IMGUI stuff //
     /////////////////////
@@ -481,6 +456,14 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        ImGui::GetStyle().WindowRounding = 0.0f;
+        ImGui::GetStyle().FrameRounding = 5.0f;
+
+        ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.12f, 0.12f, 1.0f);
+        ImGui::GetStyle().Colors[ImGuiCol_Border] = ImVec4(0.36f, 0.36f, 0.36f, 1.0f);
+        ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(0.92f, 0.92f, 0.92f, 1.0f);
+        
+
         // 2.5 our own created windows
         int framebufferWidth, framebufferHeight;
         glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
@@ -492,7 +475,7 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
         RenderRecorderWindow(win_state, pair, framebufferWidth, framebufferHeight);
 
         // right window
-        RenderMainWindow(win_state, framebufferWidth, framebufferHeight);
+        RenderMainWindow(win_state, mydoc_path, framebufferWidth, framebufferHeight);
 
         if (win_state.show_demo_window) {
             ImGui::ShowDemoWindow(&win_state.show_demo_window);
@@ -506,6 +489,8 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
         glClearColor(win_state.clear_color.x * win_state.clear_color.w, win_state.clear_color.y * win_state.clear_color.w, win_state.clear_color.z * win_state.clear_color.w, win_state.clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        
 
         glfwSwapBuffers(window);
         /////////////////////
