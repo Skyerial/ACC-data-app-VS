@@ -59,7 +59,10 @@ namespace {
         ImVec2 live_win_size;
         ImVec4 clear_color;
 
+        // needed to display data in the live window
         std::vector<int> live_laps;
+        int consecutive_laps;
+        bool was_in_pit;
 
         ImGuiWindowFlags window_flags;
         std::wstring file_to_show;      // not used atm..
@@ -67,7 +70,7 @@ namespace {
 
     void InitializeState(WinState& win_state)
     {
-        win_state.show_demo_window = true;
+        win_state.show_demo_window = false;
         win_state.show_another_window = false;
         win_state.menu_initialized = false;
         win_state.live_initialized = false;
@@ -77,6 +80,10 @@ namespace {
         win_state.data_win_size = { 0,0 };
         win_state.live_win_size = { 0,0 };
         win_state.clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+        // needed to display data in the live window
+        win_state.consecutive_laps = 0;
+        win_state.was_in_pit = false;
 
         win_state.window_flags = 0;
         win_state.window_flags |= ImGuiWindowFlags_NoTitleBar;
@@ -186,16 +193,25 @@ namespace {
             ImGui::End();
             return;
         }
+
         ImGui::Text("live data will be displayed here");
 
         if (pair.session_active || !win_state.live_laps.empty())
         {
             ImGui::Text("Session being recorded");
+            ImGui::Separator();
+
             if (win_state.live_laps.empty()) // not sure if this is needed, but maybe since back() on empty vector is undefined
+            {
                 win_state.live_laps.push_back(pair.lapnumber.load());
+                win_state.consecutive_laps++;
+            }
 
             if (win_state.live_laps.back() < pair.lapnumber.load())
+            {
                 win_state.live_laps.push_back(pair.lapnumber.load());
+                win_state.consecutive_laps++;
+            }
 
             if (win_state.live_laps.back() > pair.lapnumber.load())
                 win_state.live_laps.clear();
@@ -205,10 +221,27 @@ namespace {
                 if (i != 0)
                     ImGui::Text("Completed lap %d", i);
             }
+
+            ImGui::Separator();
+            ImGui::Text("Consecutive laps: %d", win_state.consecutive_laps);
+
+            if (pair.in_pit)
+            {
+                ImGui::Text("In pitlane");
+                win_state.was_in_pit = true;
+            }
+
+            if (!pair.in_pit && win_state.was_in_pit)// reset concurrent laps only when exiting the pit lane
+            {
+                win_state.consecutive_laps = 0;
+                win_state.was_in_pit = false;
+            }
+
             if (!pair.session_active && win_state.live_laps.size() > 1)
                 ImGui::Text("Session saved");
-            else
+            else if (!pair.session_active)
                 ImGui::Text("Session didn't saved, not enough laps");
+
             ImGui::SetScrollHereY();
         }
 

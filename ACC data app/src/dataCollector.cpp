@@ -83,6 +83,7 @@ void DataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 			// std::cout << pfg->iLastTime << '\n';
 			UpdateLap(pfg, laps);
 			pair.lapnumber = laps.back().getLapNumber(); // this feels slightly ulgly but oh well
+			pair.in_pit = pfg->isInPitLane;
 			Sleep(100); // in miliseconds, tickrate is 10Hz
 		}
 

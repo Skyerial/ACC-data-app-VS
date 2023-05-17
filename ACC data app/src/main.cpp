@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
 	pair.UI_running = true;
 	pair.lapnumber = 0;
 	pair.session_active = false;
+	pair.in_pit = true;				// Starts true since car always starts in pit
 
 	// since we only use two threads atm there no need to make a vector threadpool
 	// this is good to do once we add more threads tho
