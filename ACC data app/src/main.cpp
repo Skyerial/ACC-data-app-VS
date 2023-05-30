@@ -25,7 +25,7 @@ HRESULT hres = SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT
 int main(int argc, char* argv[])
 {
 	if (hres != S_OK) { return 1; } // check if my document path was actually found
-	
+
 	ui_data_pair pair;
 	pair.UI_running = true;
 	pair.lapnumber = 0;
@@ -39,5 +39,6 @@ int main(int argc, char* argv[])
 
 	ui_thread.join();
 	data_thread.join();
+
 	return 0;
 }

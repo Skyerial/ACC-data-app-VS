@@ -1,5 +1,7 @@
 #pragma once
 #include "nlohmann/json.hpp"
+#include "SharedFileOut.h"
+#include "Lapdata.h"
 
 using json = nlohmann::json;
 
@@ -10,25 +12,35 @@ using json = nlohmann::json;
 class SessionData
 {
 private:
+    std::wstring date;
     AC_SESSION_TYPE session;
-    wchar_t* track;
-    wchar_t* carModel;
-    int bestLap;
+    int best_lap; // this has its own set function
+    wchar_t* circuit;
+    wchar_t* car;
+    int online;
+    int race_number; // seems to not be possible to get with sharedmem
+    wchar_t* driver_name;
+    wchar_t* driver_surname;
 
 public:
+    std::wstring GetDate() { return date;  }
     AC_SESSION_TYPE getSession() { return session; }
-    wchar_t* getTrack() { return track; }
-    wchar_t* getCarModel() { return carModel; }
-    int getBestLap() { return bestLap; }
+    int getBestLap() { return best_lap; }
+    wchar_t* getTrack() { return circuit; }
+    wchar_t* getCarModel() { return car; }
+    int GetOnline() { return online; }
+    int GetRaceNumber() { return race_number; }
+    wchar_t* GetDriverName() { return driver_name; }
+    wchar_t* GetDriverSurname() { return driver_surname; }
 
     void SetSessionData(SPageFileStatic* pfs, SPageFileGraphic* pfg);
-    void SetBestLap();
+    void SetBestLap(std::vector<LapData>& laps);
 
     friend void to_json(json& j, SessionData data) {
         j["session"] = data.session;
-        j["track"] = data.track;
-        j["car"] = data.carModel;
-        j["best lap"] = data.bestLap;
+        j["track"] = data.circuit;
+        j["car"] = data.car;
+        j["best lap"] = data.best_lap;
     }
 
     void Print();

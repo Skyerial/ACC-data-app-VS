@@ -30,6 +30,7 @@
 #include "lapData.h"
 #include "sessionData.h"
 #include "SharedFileOut.h"
+#include "database/database.h"
 
 using json = nlohmann::json;
 
@@ -97,10 +98,15 @@ void DataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 				if (laps.back().getLapNumber() == laps[laps.size() - 2].getLapNumber())
 					laps.pop_back();
 
-				json jLaps = laps;
-				json jSession = session;
-				jSession["laps"] = jLaps;
-				WriteToFile(jSession, file_location);
+				session.SetBestLap(laps);
+
+				//json jLaps = laps;
+				//json jSession = session;
+				//jSession["laps"] = jLaps;
+				//WriteToFile(jSession, file_location);
+
+				// write to database TEST
+				InsertSessionLap(session, laps);
 			}
 		}
 

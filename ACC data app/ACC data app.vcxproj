@@ -27,6 +27,8 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\dataAppUI.cpp" />
+    <ClCompile Include="src\database\database.cpp" />
+    <ClCompile Include="src\database\sqlite3.c" />
     <ClCompile Include="src\dataCollector.cpp" />
     <ClCompile Include="src\dataInitDismiss.cpp" />
     <ClCompile Include="headers\dataInitDismiss.h" />
@@ -38,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\dataAppUI.h" />
+    <ClInclude Include="headers\database\database.h" />
+    <ClInclude Include="headers\database\sqlite3.h" />
     <ClInclude Include="headers\dataCollector.h" />
     <ClInclude Include="headers\dataToFile.h" />
     <ClInclude Include="headers\dataUITransfer.h" />
