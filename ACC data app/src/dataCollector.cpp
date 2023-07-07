@@ -71,7 +71,7 @@ void DataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 				newSession = false;
 				pair.session_active = true;
 				lastSessionType = pfg->session;
-				session.SetSessionData(pfs, pfg);
+				session.Update(pfs, pfg);
 				//std::cout << "new session started" << std::endl;
 			}
 			// break out of session loop when a session changes
@@ -83,8 +83,11 @@ void DataCollector(std::wstring mydoc_path, ui_data_pair& pair)
 			// track and multiplayer or singleplayer
 			// std::cout << pfg->iLastTime << '\n';
 			UpdateLap(pfg, laps);
+			session.BestLap(laps.back().getLapTime());
+
 			pair.lapnumber = laps.back().getLapNumber(); // this feels slightly ulgly but oh well
 			pair.in_pit = pfg->isInPitLane;
+			
 			Sleep(100); // in miliseconds, tickrate is 10Hz
 		}
 

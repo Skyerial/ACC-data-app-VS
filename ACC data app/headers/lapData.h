@@ -1,6 +1,6 @@
 #pragma once
 #include "SharedFileOut.h"
-#include "nlohmann\json.hpp"
+#include "nlohmann/json.hpp"
 #include <vector>
 
 using json = nlohmann::json;
@@ -13,47 +13,49 @@ using json = nlohmann::json;
 // information for that lap becomes available.
 class LapData
 {
-private:
-    int currentLap;
-    int validLap;       // not implemented yet
-    int laptime;        // in miliseconds
-    int sector1;        // ^
-    int sector2;        // ^
-    int sector3;        // ^
-
 public:
     // constructor
-    LapData() 
-    {
-        currentLap = 0;
-        validLap = 0;
-        laptime = 0;
-        sector1 = 0;
-        sector2 = 0;
-        sector3 = 0;
-    };
+    LapData();
+    LapData(int lapnumber, int valid, int laptime, int sector1,
+            int sector2, int sector3, int in_pit, int position);
 
-    int getLapNumber() { return currentLap; }
-    int getLapTime() { return laptime; }
-    int getSector1() { return sector1; }
-    int getSector2() { return sector2; }
-    int getSector3() { return sector3; }
+    int getLapNumber() { return currentLap_; }
+    int GetValidLap() { return validLap_; }
+    int getLapTime() { return laptime_; }
+    int getSector1() { return sector1_; }
+    int getSector2() { return sector2_; }
+    int getSector3() { return sector3_; }
+    int GetInPit() { return in_pit_; }
+    int GetPostition() { return position_; }
 
     void SetLapNumber(SPageFileGraphic* pfg);
     void SetLapTimeValid(SPageFileGraphic* pfg);
     void AddCurrentSectorTime(SPageFileGraphic* pfg);
+    void SetInPit(SPageFileGraphic* pfg);
+    void SetPosition(SPageFileGraphic* pfg);
 
     // JSON stuff
     friend void to_json(json& j, const LapData& ld) {
-        j["current lap"] = ld.currentLap;
-        j["laptime"] = ld.laptime;
-        j["sector1"] = ld.sector1;
-        j["sector2"] = ld.sector2;
-        j["sector3"] = ld.sector3;
+        j["current lap"] = ld.currentLap_;
+        j["laptime"] = ld.laptime_;
+        j["sector1"] = ld.sector1_;
+        j["sector2"] = ld.sector2_;
+        j["sector3"] = ld.sector3_;
     }
 
     // TESTING
     void Print();
+
+private:
+    int currentLap_;
+    int validLap_;       // not implemented yet
+    int laptime_;        // in miliseconds
+    int sector1_;        // ^
+    int sector2_;        // ^
+    int sector3_;        // ^
+    int in_pit_;
+    int position_;
+
 };
 
 std::vector<LapData> CreateLaps();

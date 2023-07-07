@@ -2,6 +2,10 @@
 #include "sessionData.h"
 #include "lapData.h"
 
-void InsertSessionLap(SessionData& session, std::vector<LapData>& laps);
+int InsertSessionLap(SessionData& session, std::vector<LapData>& laps);
+
+void RetrieveSession(std::vector<SessionData>& session, int limit, int offset);
+
+void RetrieveLaps(std::vector<LapData>& laps, int session_id);
 
 void MakeDB();

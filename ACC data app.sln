@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ACC data app", "ACC data app\ACC data app.vcxproj", "{8711DA28-F456-417C-A0E6-32CAC94E2AB5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTests", "UnitTests\UnitTests.vcxproj", "{1F14083B-E446-46BD-B844-2463DC5CF805}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{8711DA28-F456-417C-A0E6-32CAC94E2AB5}.Release|x64.Build.0 = Release|x64
 		{8711DA28-F456-417C-A0E6-32CAC94E2AB5}.Release|x86.ActiveCfg = Release|Win32
 		{8711DA28-F456-417C-A0E6-32CAC94E2AB5}.Release|x86.Build.0 = Release|Win32
+		{1F14083B-E446-46BD-B844-2463DC5CF805}.Debug|x64.ActiveCfg = Debug|x64
+		{1F14083B-E446-46BD-B844-2463DC5CF805}.Debug|x64.Build.0 = Debug|x64
+		{1F14083B-E446-46BD-B844-2463DC5CF805}.Debug|x86.ActiveCfg = Debug|Win32
+		{1F14083B-E446-46BD-B844-2463DC5CF805}.Debug|x86.Build.0 = Debug|Win32
+		{1F14083B-E446-46BD-B844-2463DC5CF805}.Release|x64.ActiveCfg = Release|x64
+		{1F14083B-E446-46BD-B844-2463DC5CF805}.Release|x64.Build.0 = Release|x64
+		{1F14083B-E446-46BD-B844-2463DC5CF805}.Release|x86.ActiveCfg = Release|Win32
+		{1F14083B-E446-46BD-B844-2463DC5CF805}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
