@@ -28,6 +28,7 @@
 
 // Own .h
 #include "dataToFile.h"
+#include "database/database.h"
 
 using json = nlohmann::json;
 
@@ -281,39 +282,47 @@ namespace {
         ImGui::End();
     }
 
-    void RenderSessionWindow(WinState& win_state, std::wstring mydoc_path, int framebufferWidth, int framebufferHeight)
+    void RenderSessionWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
     {
         SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
         ImGui::Text("Session window");
 
-        // should read the files only once and create buttons again and again
-        // data of files stored in vector of j...
-        // if we would do that then we wouldnt need to read the files twice...
-        std::wstring data_folder = L"\\ACC app data";
-        std::wstring path = mydoc_path + data_folder;
-        for (const auto& entry : std::filesystem::directory_iterator(path))
-        {
-            // read json into json j
-            json j = ReadFromFile(entry.path());
-            // get session from the json j
-            int session_number = j["session"];
-            std::string session_s = GetSessionType(session_number);
+        std::vector<SessionData> sessions;
+        // this should be based on like a button that say next page and then we get
+        // the next # of results
+        RetrieveSession(sessions, 5, 0);
+        std::vector<LapData> laps;
 
-            // get date as string from filename
-            std::string base_filename = entry.path().string().substr(entry.path().string().find_last_of("/\\") + 1);
-            std::string::size_type const p(base_filename.find_last_of('.'));
-            std::string file_without_extension = base_filename.substr(0, p);
-            std::string clean_date = FormatDate(file_without_extension);
-            // create button with session
-            // size of the button should be less hardcoded
-            if (ImGui::CollapsingHeader((session_s + " " + clean_date).c_str()))
+        for (auto& session : sessions)
+        {
+            // create name for the button
+            std::string session_string = GetSessionType(session.getSession());
+            std::wstring w_date = session.GetDate();
+            std::string date(w_date.begin(), w_date.end());
+
+
+            // create the button
+            if (ImGui::CollapsingHeader((session_string + " " + date).c_str()))
             {
+                // fill with laps if empty
+                // clear and refill if id is different
+                if (laps.empty())
+                {
+                    RetrieveLaps(laps, session.GetId());
+                }
+                else if (laps.back().GetId() != session.GetId())
+                {
+                    laps.clear();
+                    RetrieveLaps(laps, session.GetId());
+                }
+
                 ImGui::BeginTable(
                     "lap data",
                     5,
                     ImGuiTableFlags_RowBg,
-                    { (float)framebufferWidth - win_state.menu_win_size.x, (float)framebufferHeight },
-                    (float)framebufferWidth - win_state.menu_win_size.x / 5.0f
+                    { static_cast<float>(framebufferWidth) - win_state.menu_win_size.x,
+                    	static_cast<float>(framebufferHeight) },
+                    static_cast<float>(framebufferWidth) - win_state.menu_win_size.x / 5.0f
                 );
 
                 ImGui::TableSetupColumn("Lap");
@@ -323,32 +332,21 @@ namespace {
                 ImGui::TableSetupColumn("Sector 3");
                 ImGui::TableHeadersRow();
 
-                json j = ReadFromFile(entry.path());
-                json laps = j["laps"];
-
-                for (auto& x : laps.items())
+                for (auto& x : laps)
                 {
-                    //std::cout << "key: " << x.key() << ", value: " << x.value() << '\n';
-                    json single_lap = x.value();
-                    //std::cout << single_lap.at("laptime: ") << std::endl;
                     ImGui::TableNextColumn();
-                    int current_lap = single_lap.at("current lap");
-                    ImGui::Text("%d", current_lap);
+                    ImGui::Text("%d", x.getLapNumber());
                     ImGui::TableNextColumn();
-                    int laptime = single_lap.at("laptime");
-                    std::string laptime_s = FormatTime(laptime);
+                    std::string laptime_s = FormatTime(x.getLapTime());
                     ImGui::Text(laptime_s.c_str());
                     ImGui::TableNextColumn();
-                    int sector1 = single_lap.at("sector1");
-                    std::string sector1_s = FormatTime(sector1);
+                    std::string sector1_s = FormatTime(x.getSector1());
                     ImGui::Text(sector1_s.c_str());
                     ImGui::TableNextColumn();
-                    int sector2 = single_lap.at("sector2");
-                    std::string sector2_s = FormatTime(sector2);
+                    std::string sector2_s = FormatTime(x.getSector2());
                     ImGui::Text(sector2_s.c_str());
                     ImGui::TableNextColumn();
-                    int sector3 = single_lap.at("sector3");
-                    std::string sector3_s = FormatTime(sector3);
+                    std::string sector3_s = FormatTime(x.getSector3());
                     ImGui::Text(sector3_s.c_str());
                 }
 
@@ -359,6 +357,85 @@ namespace {
         win_state.data_win_size = ImGui::GetWindowSize();
         ImGui::End();
     }
+
+    //void RenderSessionWindow(WinState& win_state, std::wstring mydoc_path, int framebufferWidth, int framebufferHeight)
+    //{
+    //    SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
+    //    ImGui::Text("Session window");
+
+    //    // should read the files only once and create buttons again and again
+    //    // data of files stored in vector of j...
+    //    // if we would do that then we wouldn't need to read the files twice...
+    //    std::wstring data_folder = L"\\ACC app data";
+    //    std::wstring path = mydoc_path + data_folder;
+    //    for (const auto& entry : std::filesystem::directory_iterator(path))
+    //    {
+    //        // read json into json j
+    //        json j = ReadFromFile(entry.path());
+    //        // get session from the json j
+    //        int session_number = j["session"];
+    //        std::string session_s = GetSessionType(session_number);
+
+    //        // get date as string from filename
+    //        std::string base_filename = entry.path().string().substr(entry.path().string().find_last_of("/\\") + 1);
+    //        std::string::size_type const p(base_filename.find_last_of('.'));
+    //        std::string file_without_extension = base_filename.substr(0, p);
+    //        std::string clean_date = FormatDate(file_without_extension);
+    //        // create button with session
+    //        // size of the button should be less hardcoded
+    //        if (ImGui::CollapsingHeader((session_s + " " + clean_date).c_str()))
+    //        {
+    //            ImGui::BeginTable(
+    //                "lap data",
+    //                5,
+    //                ImGuiTableFlags_RowBg,
+    //                { (float)framebufferWidth - win_state.menu_win_size.x, (float)framebufferHeight },
+    //                (float)framebufferWidth - win_state.menu_win_size.x / 5.0f
+    //            );
+
+    //            ImGui::TableSetupColumn("Lap");
+    //            ImGui::TableSetupColumn("Laptime");
+    //            ImGui::TableSetupColumn("Sector 1");
+    //            ImGui::TableSetupColumn("Sector 2");
+    //            ImGui::TableSetupColumn("Sector 3");
+    //            ImGui::TableHeadersRow();
+
+    //            json j = ReadFromFile(entry.path());
+    //            json laps = j["laps"];
+
+    //            for (auto& x : laps.items())
+    //            {
+    //                //std::cout << "key: " << x.key() << ", value: " << x.value() << '\n';
+    //                json single_lap = x.value();
+    //                //std::cout << single_lap.at("laptime: ") << std::endl;
+    //                ImGui::TableNextColumn();
+    //                int current_lap = single_lap.at("current lap");
+    //                ImGui::Text("%d", current_lap);
+    //                ImGui::TableNextColumn();
+    //                int laptime = single_lap.at("laptime");
+    //                std::string laptime_s = FormatTime(laptime);
+    //                ImGui::Text(laptime_s.c_str());
+    //                ImGui::TableNextColumn();
+    //                int sector1 = single_lap.at("sector1");
+    //                std::string sector1_s = FormatTime(sector1);
+    //                ImGui::Text(sector1_s.c_str());
+    //                ImGui::TableNextColumn();
+    //                int sector2 = single_lap.at("sector2");
+    //                std::string sector2_s = FormatTime(sector2);
+    //                ImGui::Text(sector2_s.c_str());
+    //                ImGui::TableNextColumn();
+    //                int sector3 = single_lap.at("sector3");
+    //                std::string sector3_s = FormatTime(sector3);
+    //                ImGui::Text(sector3_s.c_str());
+    //            }
+
+    //            ImGui::EndTable();
+    //        }
+    //    }
+
+    //    win_state.data_win_size = ImGui::GetWindowSize();
+    //    ImGui::End();
+    //}
 
     void RenderComboWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
     {
@@ -397,7 +474,7 @@ namespace {
             RenderProgressionWindow(win_state, framebufferWidth, framebufferHeight);
             break;
         case Sessions_window:
-            RenderSessionWindow(win_state, mydoc_path, framebufferWidth, framebufferHeight);
+            RenderSessionWindow(win_state, framebufferWidth, framebufferHeight);
             break;
         case Best_combo_window:
             RenderComboWindow(win_state, framebufferWidth, framebufferHeight);

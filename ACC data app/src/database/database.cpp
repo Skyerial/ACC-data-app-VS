@@ -305,9 +305,10 @@ void SelectLaps(std::vector<LapData>& laps, int session_id)
 		int sector3 = sqlite3_column_int(stmt, 6);
 		int in_pit = sqlite3_column_int(stmt, 7);
 		int position = sqlite3_column_int(stmt, 8);
+		int id = sqlite3_column_int(stmt, 9);
 
 		LapData current_lap(lapnumber, valid, laptime, sector1, sector2, sector3,
-							in_pit, position);
+							in_pit, position, id);
 		laps.push_back(current_lap);
 	}
 	if (rc != SQLITE_DONE) { fprintf(stderr, "ERROR step select laps: %d %s\n", rc, sqlite3_errmsg(db)); }

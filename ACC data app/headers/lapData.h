@@ -17,7 +17,7 @@ public:
     // constructor
     LapData();
     LapData(int lapnumber, int valid, int laptime, int sector1,
-            int sector2, int sector3, int in_pit, int position);
+            int sector2, int sector3, int in_pit, int position, int id);
 
     int getLapNumber() { return currentLap_; }
     int GetValidLap() { return validLap_; }
@@ -27,6 +27,7 @@ public:
     int getSector3() { return sector3_; }
     int GetInPit() { return in_pit_; }
     int GetPostition() { return position_; }
+    int GetId() { return id_; }
 
     void SetLapNumber(SPageFileGraphic* pfg);
     void SetLapTimeValid(SPageFileGraphic* pfg);
@@ -48,14 +49,14 @@ public:
 
 private:
     int currentLap_;
-    int validLap_;       // not implemented yet
-    int laptime_;        // in miliseconds
-    int sector1_;        // ^
-    int sector2_;        // ^
-    int sector3_;        // ^
+    int validLap_;      // not implemented yet
+    int laptime_;       // in miliseconds
+    int sector1_;       // ^
+    int sector2_;       // ^
+    int sector3_;       // ^
     int in_pit_;
     int position_;
-
+    int id_;            // Only used when retrieving from database
 };
 
 std::vector<LapData> CreateLaps();

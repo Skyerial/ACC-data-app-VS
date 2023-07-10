@@ -26,10 +26,11 @@ LapData::LapData()
     sector3_ = 0;
     in_pit_ = 0;
     position_ = 0;
+    id_ = 0;
 }
 
 LapData::LapData(int lapnumber, int valid, int laptime, int sector1,
-                int sector2, int sector3, int in_pit, int position)
+                int sector2, int sector3, int in_pit, int position, int id)
 {
     currentLap_ = lapnumber;
     validLap_ = valid;
@@ -39,6 +40,7 @@ LapData::LapData(int lapnumber, int valid, int laptime, int sector1,
     sector3_ = sector3;
     in_pit_ = in_pit;
     position_ = position;
+    id_ = id;
 }
 
 void LapData::SetLapNumber(SPageFileGraphic* pfg) {
