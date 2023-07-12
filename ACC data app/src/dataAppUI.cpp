@@ -290,8 +290,10 @@ namespace {
         std::vector<SessionData> sessions;
         // this should be based on like a button that say next page and then we get
         // the next # of results
-        if (ImGui::Button("Previous"))
+        if (ImGui::Button("Previous") && win_state.session_show_offset > 0) 
             win_state.session_show_offset -= 5;
+        ImGui::SameLine();
+        ImGui::Text("%d", win_state.session_show_offset / 5 + 1);
         ImGui::SameLine();
         if (ImGui::Button(("Next")))
             win_state.session_show_offset += 5;
@@ -360,6 +362,34 @@ namespace {
                 }
 
                 ImGui::EndTable();
+
+	            if(ImGui::Button("Delete"))
+                    ImGui::OpenPopup("Delete?");
+
+                // Always center this window when appearing
+                ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+                ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+                if (ImGui::BeginPopupModal("Delete?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+                {
+                    ImGui::Text("Are you sure this session should be deleted? Session cannot be recovered.");
+                    ImGui::Separator();
+
+                    static bool dont_ask_me_next_time = false;
+                    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+                    ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
+                    ImGui::PopStyleVar();
+
+                    if (ImGui::Button("OK", ImVec2(120, 0)))
+                    {
+                        DeleteSessionLaps(session.GetId());
+                        ImGui::CloseCurrentPopup();
+                    }
+                    ImGui::SetItemDefaultFocus();
+                    ImGui::SameLine();
+                    if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+                    ImGui::EndPopup();
+                }
             }
         }
 
