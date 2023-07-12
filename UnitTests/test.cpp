@@ -14,6 +14,7 @@ TEST(DatabaseTest, DatabaseInsertSessionLap)
 	std::vector<LapData> laps;
 	laps.push_back(lap1);
 	laps.push_back(lap2);
+	ResetTable(); // Toggle this based on testing needs
 	ASSERT_EQ(0, InsertSessionLap(session, laps));
 	ASSERT_EQ(0, InsertSessionLap(session, laps));
 	ASSERT_EQ(0, InsertSessionLap(session, laps));

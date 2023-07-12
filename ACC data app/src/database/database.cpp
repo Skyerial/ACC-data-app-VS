@@ -360,17 +360,12 @@ void DeleteLaps(const int session_id)
 int InsertSessionLap(SessionData& session, std::vector<LapData>& laps)
 {
 	OpenDatabase();
-
-	//sqlite3_exec(db, "DROP TABLE sessionData", nullptr, nullptr, nullptr);
-	//sqlite3_exec(db, "DROP TABLE lapData", nullptr, nullptr, nullptr);
-	//CreateTables();
 	InsertSession(session);
 	const int session_id = CorrespondingSessionID(session); // this has to wait until the previous function is done
 													  // otherwise this results in two sources wanting to use
 													  // the database at the same time
 	//int session_id = 0;
 	InsertLaps(laps, session_id);
-
 	return CloseDatabase();
 }
 
@@ -396,4 +391,14 @@ void DeleteSessionLaps(const int session_id)
 	DeleteSession(session_id);
 	DeleteLaps(session_id);
 	CloseDatabase();
+}
+
+//////////////////////
+// TESTING
+//////////////////////
+void ResetTable()
+{
+	sqlite3_exec(db, "DROP TABLE sessionData", nullptr, nullptr, nullptr);
+	sqlite3_exec(db, "DROP TABLE lapData", nullptr, nullptr, nullptr);
+	CreateTables();
 }
