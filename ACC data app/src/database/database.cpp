@@ -288,8 +288,8 @@ void SelectLaps(std::vector<LapData>& laps, int session_id)
 	sqlite3_stmt* stmt;
 	int rc;
 
-	std::string select_laps_query = "SELECT * FROM lapData WHERE session_id = ? ORDER BY id";
-	rc = sqlite3_prepare_v2(db, select_laps_query.c_str(), (int)select_laps_query.length(), &stmt, nullptr);
+	const std::string select_laps_query = "SELECT * FROM lapData WHERE session_id = ? ORDER BY id";
+	rc = sqlite3_prepare_v2(db, select_laps_query.c_str(), static_cast<int>(select_laps_query.length()), &stmt, nullptr);
 	if (rc != SQLITE_OK) { fprintf(stderr, "ERROR select laps: %s\n", sqlite3_errmsg(db)); }
 
 	rc = sqlite3_bind_int(stmt, 1, session_id);
@@ -317,17 +317,55 @@ void SelectLaps(std::vector<LapData>& laps, int session_id)
 	if (rc != SQLITE_OK) { fprintf(stderr, "ERROR finalize select laps: %s\n", sqlite3_errmsg(db)); }
 }
 
-} // anonimous namespace
+void DeleteSession(const int session_id)
+{
+	sqlite3_stmt* stmt;
+	int rc;
+
+	const std::string delete_query = "DELETE FROM sessionData WHERE id = ?";
+	rc = sqlite3_prepare_v2(db, delete_query.c_str(), static_cast<int>(delete_query.length()), &stmt, nullptr);
+	if (rc != SQLITE_OK) { fprintf(stderr, "ERROR delete session: %s\n", sqlite3_errmsg(db)); }
+
+	rc = sqlite3_bind_int(stmt, 1, session_id);
+	if (rc != SQLITE_OK) { fprintf(stderr, "ERROR delete session bind: %d %s\n", rc, sqlite3_errmsg(db)); }
+
+	rc = sqlite3_step(stmt);
+	if (rc != SQLITE_DONE) { fprintf(stderr, "ERROR delete session step: %d %s\n", rc, sqlite3_errmsg(db)); }
+
+	rc = sqlite3_finalize(stmt);
+	if (rc != SQLITE_OK) { fprintf(stderr, "ERROR delete session finalize: %s\n", sqlite3_errmsg(db)); }
+}
+
+void DeleteLaps(const int session_id)
+{
+	sqlite3_stmt* stmt;
+	int rc;
+
+	const std::string delete_query = "DELETE FROM lapData WHERE session_id = ?";
+	rc = sqlite3_prepare_v2(db, delete_query.c_str(), static_cast<int>(delete_query.length()), &stmt, nullptr);
+	if (rc != SQLITE_OK) { fprintf(stderr, "ERROR delete laps: %s\n", sqlite3_errmsg(db)); }
+
+	rc = sqlite3_bind_int(stmt, 1, session_id);
+	if (rc != SQLITE_OK) { fprintf(stderr, "ERROR delete laps bind: %d %s\n", rc, sqlite3_errmsg(db)); }
+
+	rc = sqlite3_step(stmt);
+	if (rc != SQLITE_DONE) { fprintf(stderr, "ERROR delete laps step: %d %s\n", rc, sqlite3_errmsg(db)); }
+
+	rc = sqlite3_finalize(stmt);
+	if (rc != SQLITE_OK) { fprintf(stderr, "ERROR delete laps finalize: %s\n", sqlite3_errmsg(db)); }
+}
+
+} // anonymous namespace
 
 int InsertSessionLap(SessionData& session, std::vector<LapData>& laps)
 {
 	OpenDatabase();
 
-	sqlite3_exec(db, "DROP TABLE sessionData", nullptr, nullptr, nullptr);
-	sqlite3_exec(db, "DROP TABLE lapData", nullptr, nullptr, nullptr);
-	CreateTables();
+	//sqlite3_exec(db, "DROP TABLE sessionData", nullptr, nullptr, nullptr);
+	//sqlite3_exec(db, "DROP TABLE lapData", nullptr, nullptr, nullptr);
+	//CreateTables();
 	InsertSession(session);
-	int session_id = CorrespondingSessionID(session); // this has to wait until the previous function is done
+	const int session_id = CorrespondingSessionID(session); // this has to wait until the previous function is done
 													  // otherwise this results in two sources wanting to use
 													  // the database at the same time
 	//int session_id = 0;
@@ -338,29 +376,24 @@ int InsertSessionLap(SessionData& session, std::vector<LapData>& laps)
 
 // Returns a SessionData vector, should be taken as const reference and not copied
 // Takes the amount of session to retrieve and from which ID onward
-void RetrieveSession(std::vector<SessionData>& session, int limit, int offset)
+void RetrieveSession(std::vector<SessionData>& session, const int limit, const int offset)
 {
 	OpenDatabase();
 	SelectSession(session, limit, offset);
 	CloseDatabase();
 }
 
-void RetrieveLaps(std::vector<LapData>& laps, int session_id)
+void RetrieveLaps(std::vector<LapData>& laps, const int session_id)
 {
 	OpenDatabase();
 	SelectLaps(laps, session_id);
 	CloseDatabase();
 }
 
-// TEST
-void MakeDB()
+void DeleteSessionLaps(const int session_id)
 {
 	OpenDatabase();
-
-	SessionData session;
-	std::vector<LapData> laps;
-
-	InsertSessionLap(session, laps);
-
+	DeleteSession(session_id);
+	DeleteLaps(session_id);
 	CloseDatabase();
 }

@@ -9,11 +9,18 @@
 TEST(DatabaseTest, DatabaseInsertSessionLap)
 {
 	SessionData session;
-	LapData lap1(1, 0, 0, 0, 0, 0, 0, 0);
-	LapData lap2(2,0, 0 ,0 ,0 ,0 ,0 ,0);
+	const LapData lap1(1, 0, 0, 0, 0, 0, 0, 0, 1);
+	const LapData lap2(2,0, 0 ,0 ,0 ,0 ,0 ,0, 1);
 	std::vector<LapData> laps;
 	laps.push_back(lap1);
 	laps.push_back(lap2);
+	ASSERT_EQ(0, InsertSessionLap(session, laps));
+	ASSERT_EQ(0, InsertSessionLap(session, laps));
+	ASSERT_EQ(0, InsertSessionLap(session, laps));
+	ASSERT_EQ(0, InsertSessionLap(session, laps));
+	ASSERT_EQ(0, InsertSessionLap(session, laps));
+	ASSERT_EQ(0, InsertSessionLap(session, laps));
+	ASSERT_EQ(0, InsertSessionLap(session, laps));
 	ASSERT_EQ(0, InsertSessionLap(session, laps));
 }
 
@@ -34,6 +41,14 @@ TEST(DatabaseTest, DatabaseRetrieveLaps)
 	RetrieveLaps(laps_test, session_test[0].GetId());
 	ASSERT_EQ(1, laps_test[0].getLapNumber());
 	ASSERT_EQ(2, laps_test[1].getLapNumber());
+}
+
+TEST(DatabaseTest, DatabaseDelete)
+{
+	std::vector<LapData> laps_test;
+	DeleteSessionLaps(1);
+	RetrieveLaps(laps_test, 1);
+	ASSERT_TRUE(laps_test.empty());
 }
 
 

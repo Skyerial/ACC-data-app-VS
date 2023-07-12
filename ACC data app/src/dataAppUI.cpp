@@ -16,7 +16,6 @@
 
 // C++ standard library headers
 #include <string>
-#include <iostream>
 
 // Other libraries
 #include "nlohmann/json.hpp"
@@ -67,11 +66,12 @@ namespace {
 
         ImGuiWindowFlags window_flags;
         std::wstring file_to_show;      // not used atm..
+        int session_show_offset;
     };
 
     void InitializeState(WinState& win_state)
     {
-        win_state.show_demo_window = false;
+        win_state.show_demo_window = true;
         win_state.show_another_window = false;
         win_state.menu_initialized = false;
         win_state.live_initialized = false;
@@ -91,6 +91,7 @@ namespace {
         win_state.window_flags |= ImGuiWindowFlags_NoMove;
 
         win_state.file_to_show = L"";
+        win_state.session_show_offset = 0;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -285,12 +286,16 @@ namespace {
     void RenderSessionWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
     {
         SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
-        ImGui::Text("Session window");
 
         std::vector<SessionData> sessions;
         // this should be based on like a button that say next page and then we get
         // the next # of results
-        RetrieveSession(sessions, 5, 0);
+        if (ImGui::Button("Previous"))
+            win_state.session_show_offset -= 5;
+        ImGui::SameLine();
+        if (ImGui::Button(("Next")))
+            win_state.session_show_offset += 5;
+        RetrieveSession(sessions, 5, win_state.session_show_offset);
         std::vector<LapData> laps;
 
         for (auto& session : sessions)
@@ -302,7 +307,11 @@ namespace {
 
 
             // create the button
-            if (ImGui::CollapsingHeader((session_string + " " + date).c_str()))
+            // += more mem efficient then + for concatenation
+            std::string button_name = session_string;
+            button_name += " ";
+            button_name += date;
+            if (ImGui::CollapsingHeader(button_name.c_str()))
             {
                 // fill with laps if empty
                 // clear and refill if id is different
