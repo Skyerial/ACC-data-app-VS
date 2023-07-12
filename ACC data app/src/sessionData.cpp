@@ -98,3 +98,24 @@ void SessionData::SetBestLap(std::vector<LapData>& laps) {
 			best_lap_ = laps[i].getLapTime();
 	}
 }
+
+std::string GetSessionType(int session)
+{
+	std::string sessionType;
+	switch (session) {
+	case -1: sessionType = "UNKOWN"; break;
+	case 0: sessionType = "practise"; break;
+	case 1: sessionType = "qualy"; break;
+	case 2: sessionType = "race"; break;
+	case 3: sessionType = "hotlap"; break;
+	case 4: sessionType = "timeattack"; break;
+	case 5: sessionType = "drift"; break;
+	case 6: sessionType = "drag"; break;
+	case 7: sessionType = "hotstint"; break;
+	case 8: sessionType = "hotlapsuperpole"; break;
+	default:
+		break;
+	}
+
+	return sessionType;
+}

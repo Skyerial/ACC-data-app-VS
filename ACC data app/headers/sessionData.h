@@ -1,9 +1,9 @@
 #pragma once
-#include "nlohmann/json.hpp"
-#include "SharedFileOut.h"
 #include "Lapdata.h"
 
-using json = nlohmann::json;
+#include <string>
+
+#include "SharedFileOut.h"
 
 // This class is used to keep all the session related data together. The intend
 // is to create an object of this class when the session starts, gather all the
@@ -38,13 +38,6 @@ public:
 
     void SetBestLap(std::vector<LapData>& laps);
 
-    /*friend void to_json(json& j, SessionData data) {
-        j["session"] = data.session;
-        j["track"] = data.circuit;
-        j["car"] = data.car;
-        j["best lap"] = data.best_lap;
-    }*/
-
 private:
     int id_; // only used for when sessiondata is retrieved from database
     std::wstring date_;
@@ -57,3 +50,5 @@ private:
     std::wstring driver_name_;
     std::wstring driver_surname_;
 };
+
+std::string GetSessionType(int session);

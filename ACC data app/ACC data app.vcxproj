@@ -32,7 +32,6 @@
     <ClCompile Include="src\dataCollector.cpp" />
     <ClCompile Include="src\dataInitDismiss.cpp" />
     <ClCompile Include="headers\dataInitDismiss.h" />
-    <ClCompile Include="src\dataToFile.cpp" />
     <ClCompile Include="src\lapData.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sessionData.cpp" />
@@ -43,7 +42,6 @@
     <ClInclude Include="headers\database\database.h" />
     <ClInclude Include="headers\database\sqlite3.h" />
     <ClInclude Include="headers\dataCollector.h" />
-    <ClInclude Include="headers\dataToFile.h" />
     <ClInclude Include="headers\dataUITransfer.h" />
     <ClInclude Include="headers\lapData.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -55,7 +53,6 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="nlohmann\json.hpp" />
     <ClInclude Include="headers\sessionData.h" />
     <ClInclude Include="headers\SharedFileOut.h" />
     <ClInclude Include="headers\stdafx.h" />

@@ -16,9 +16,9 @@
 
 // C++ standard library headers
 #include <string>
+#include <chrono>
 
 // Other libraries
-#include "nlohmann/json.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
@@ -26,10 +26,7 @@
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
 // Own .h
-#include "dataToFile.h"
 #include "database/database.h"
-
-using json = nlohmann::json;
 
 ActiveWindow active_window = Sessions_window; // This is the window that is open
                                               // when the app starts up
@@ -49,6 +46,32 @@ namespace {
     //////////////////////////////////////////////////////////////////////////////
     struct WinState
     {
+        // constructor
+        WinState()
+        {
+            show_demo_window = true;
+            show_another_window = false;
+            menu_initialized = false;
+            live_initialized = false;
+            data_initialized = false;
+
+            menu_win_size = { 0,0 };
+            data_win_size = { 0,0 };
+            live_win_size = { 0,0 };
+            clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+            // needed to display data in the live window
+            consecutive_laps = 0;
+            was_in_pit = false;
+
+            window_flags = 0;
+            window_flags |= ImGuiWindowFlags_NoTitleBar;
+            window_flags |= ImGuiWindowFlags_NoMove;
+
+            file_to_show = L"";
+            session_show_offset = 0;
+        }
+
         bool show_demo_window;
         bool show_another_window;
         bool menu_initialized;
@@ -69,35 +92,35 @@ namespace {
         int session_show_offset;
     };
 
-    void InitializeState(WinState& win_state)
-    {
-        win_state.show_demo_window = true;
-        win_state.show_another_window = false;
-        win_state.menu_initialized = false;
-        win_state.live_initialized = false;
-        win_state.data_initialized = false;
+    //void InitializeState(WinState& win_state)
+    //{
+    //    win_state.show_demo_window = true;
+    //    win_state.show_another_window = false;
+    //    win_state.menu_initialized = false;
+    //    win_state.live_initialized = false;
+    //    win_state.data_initialized = false;
 
-        win_state.menu_win_size = { 0,0 };
-        win_state.data_win_size = { 0,0 };
-        win_state.live_win_size = { 0,0 };
-        win_state.clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    //    win_state.menu_win_size = { 0,0 };
+    //    win_state.data_win_size = { 0,0 };
+    //    win_state.live_win_size = { 0,0 };
+    //    win_state.clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-        // needed to display data in the live window
-        win_state.consecutive_laps = 0;
-        win_state.was_in_pit = false;
+    //    // needed to display data in the live window
+    //    win_state.consecutive_laps = 0;
+    //    win_state.was_in_pit = false;
 
-        win_state.window_flags = 0;
-        win_state.window_flags |= ImGuiWindowFlags_NoTitleBar;
-        win_state.window_flags |= ImGuiWindowFlags_NoMove;
+    //    win_state.window_flags = 0;
+    //    win_state.window_flags |= ImGuiWindowFlags_NoTitleBar;
+    //    win_state.window_flags |= ImGuiWindowFlags_NoMove;
 
-        win_state.file_to_show = L"";
-        win_state.session_show_offset = 0;
-    }
+    //    win_state.file_to_show = L"";
+    //    win_state.session_show_offset = 0;
+    //}
 
     //////////////////////////////////////////////////////////////////////////////
     // Needed for OpenGL and Dear ImGui
     //////////////////////////////////////////////////////////////////////////////
-    static void glfw_error_callback(int error, const char* description)
+    static void glfw_error_callback(const int error, const char* description)
     {
         fprintf(stderr, "GLFW Error %d: %s\n", error, description);
     }
@@ -331,8 +354,7 @@ namespace {
                     "lap data",
                     5,
                     ImGuiTableFlags_RowBg,
-                    { static_cast<float>(framebufferWidth) - win_state.menu_win_size.x,
-                    	static_cast<float>(framebufferHeight) },
+                    {0,0},
                     static_cast<float>(framebufferWidth) - win_state.menu_win_size.x / 5.0f
                 );
 
@@ -396,85 +418,6 @@ namespace {
         win_state.data_win_size = ImGui::GetWindowSize();
         ImGui::End();
     }
-
-    //void RenderSessionWindow(WinState& win_state, std::wstring mydoc_path, int framebufferWidth, int framebufferHeight)
-    //{
-    //    SetMainWindowSize(win_state, framebufferWidth, framebufferHeight);
-    //    ImGui::Text("Session window");
-
-    //    // should read the files only once and create buttons again and again
-    //    // data of files stored in vector of j...
-    //    // if we would do that then we wouldn't need to read the files twice...
-    //    std::wstring data_folder = L"\\ACC app data";
-    //    std::wstring path = mydoc_path + data_folder;
-    //    for (const auto& entry : std::filesystem::directory_iterator(path))
-    //    {
-    //        // read json into json j
-    //        json j = ReadFromFile(entry.path());
-    //        // get session from the json j
-    //        int session_number = j["session"];
-    //        std::string session_s = GetSessionType(session_number);
-
-    //        // get date as string from filename
-    //        std::string base_filename = entry.path().string().substr(entry.path().string().find_last_of("/\\") + 1);
-    //        std::string::size_type const p(base_filename.find_last_of('.'));
-    //        std::string file_without_extension = base_filename.substr(0, p);
-    //        std::string clean_date = FormatDate(file_without_extension);
-    //        // create button with session
-    //        // size of the button should be less hardcoded
-    //        if (ImGui::CollapsingHeader((session_s + " " + clean_date).c_str()))
-    //        {
-    //            ImGui::BeginTable(
-    //                "lap data",
-    //                5,
-    //                ImGuiTableFlags_RowBg,
-    //                { (float)framebufferWidth - win_state.menu_win_size.x, (float)framebufferHeight },
-    //                (float)framebufferWidth - win_state.menu_win_size.x / 5.0f
-    //            );
-
-    //            ImGui::TableSetupColumn("Lap");
-    //            ImGui::TableSetupColumn("Laptime");
-    //            ImGui::TableSetupColumn("Sector 1");
-    //            ImGui::TableSetupColumn("Sector 2");
-    //            ImGui::TableSetupColumn("Sector 3");
-    //            ImGui::TableHeadersRow();
-
-    //            json j = ReadFromFile(entry.path());
-    //            json laps = j["laps"];
-
-    //            for (auto& x : laps.items())
-    //            {
-    //                //std::cout << "key: " << x.key() << ", value: " << x.value() << '\n';
-    //                json single_lap = x.value();
-    //                //std::cout << single_lap.at("laptime: ") << std::endl;
-    //                ImGui::TableNextColumn();
-    //                int current_lap = single_lap.at("current lap");
-    //                ImGui::Text("%d", current_lap);
-    //                ImGui::TableNextColumn();
-    //                int laptime = single_lap.at("laptime");
-    //                std::string laptime_s = FormatTime(laptime);
-    //                ImGui::Text(laptime_s.c_str());
-    //                ImGui::TableNextColumn();
-    //                int sector1 = single_lap.at("sector1");
-    //                std::string sector1_s = FormatTime(sector1);
-    //                ImGui::Text(sector1_s.c_str());
-    //                ImGui::TableNextColumn();
-    //                int sector2 = single_lap.at("sector2");
-    //                std::string sector2_s = FormatTime(sector2);
-    //                ImGui::Text(sector2_s.c_str());
-    //                ImGui::TableNextColumn();
-    //                int sector3 = single_lap.at("sector3");
-    //                std::string sector3_s = FormatTime(sector3);
-    //                ImGui::Text(sector3_s.c_str());
-    //            }
-
-    //            ImGui::EndTable();
-    //        }
-    //    }
-
-    //    win_state.data_win_size = ImGui::GetWindowSize();
-    //    ImGui::End();
-    //}
 
     void RenderComboWindow(WinState& win_state, int framebufferWidth, int framebufferHeight)
     {
@@ -583,7 +526,6 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
 
     // Our state
     WinState win_state;
-    InitializeState(win_state);
     /////////////////////
     // end IMGUI stuff //
     /////////////////////

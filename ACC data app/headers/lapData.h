@@ -1,9 +1,6 @@
 #pragma once
 #include "SharedFileOut.h"
-#include "nlohmann/json.hpp"
 #include <vector>
-
-using json = nlohmann::json;
 
 // This class is used to keep all the data of lap together. So the intend is
 // to create a new object for every lap and make sure all the data of that lap is
@@ -29,23 +26,14 @@ public:
     int GetPostition() { return position_; }
     int GetId() { return id_; }
 
-    void SetLapNumber(SPageFileGraphic* pfg);
-    void SetLapTimeValid(SPageFileGraphic* pfg);
-    void AddCurrentSectorTime(SPageFileGraphic* pfg);
-    void SetInPit(SPageFileGraphic* pfg);
-    void SetPosition(SPageFileGraphic* pfg);
-
-    // JSON stuff
-    friend void to_json(json& j, const LapData& ld) {
-        j["current lap"] = ld.currentLap_;
-        j["laptime"] = ld.laptime_;
-        j["sector1"] = ld.sector1_;
-        j["sector2"] = ld.sector2_;
-        j["sector3"] = ld.sector3_;
-    }
+    void SetLapNumber(const SPageFileGraphic* pfg);
+    void SetLapTimeValid(const SPageFileGraphic* pfg);
+    void AddCurrentSectorTime(const SPageFileGraphic* pfg);
+    void SetInPit(const SPageFileGraphic* pfg);
+    void SetPosition(const SPageFileGraphic* pfg);
 
     // TESTING
-    void Print();
+    void Print() const;
 
 private:
     int currentLap_;

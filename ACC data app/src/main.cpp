@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 	// since we only use two threads atm there no need to make a vector threadpool
 	// this is good to do once we add more threads tho
 	std::jthread ui_thread(UIRenderer, mydoc_path, std::ref(pair));
-	std::jthread data_thread(DataCollector, mydoc_path, std::ref(pair));
+	std::jthread data_thread(DataCollector, std::ref(pair));
 
 	ui_thread.join();
 	data_thread.join();

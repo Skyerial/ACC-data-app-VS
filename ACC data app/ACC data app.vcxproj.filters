@@ -33,9 +33,6 @@
     <ClCompile Include="src\dataInitDismiss.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\dataToFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\lapData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,9 +77,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\dataToFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="headers\lapData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -97,9 +91,6 @@
     </ClInclude>
     <ClInclude Include="headers\targetver.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="nlohmann\json.hpp">
-      <Filter>Header Files\nlohmann</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
       <Filter>Header Files\imgui</Filter>

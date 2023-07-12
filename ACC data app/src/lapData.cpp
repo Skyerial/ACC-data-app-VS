@@ -9,12 +9,9 @@
 
 #include "lapData.h"
 
-#include <memory>
 #include <vector>
-#include <iostream>
 
 #include "SharedFileOut.h"
-#include "dataToFile.h"
 
 LapData::LapData()
 {
@@ -29,8 +26,8 @@ LapData::LapData()
     id_ = 0;
 }
 
-LapData::LapData(int lapnumber, int valid, int laptime, int sector1,
-                int sector2, int sector3, int in_pit, int position, int id)
+LapData::LapData(const int lapnumber, const int valid, const int laptime, const int sector1,
+                 const int sector2, const int sector3, const int in_pit, const int position, const int id)
 {
     currentLap_ = lapnumber;
     validLap_ = valid;
@@ -43,16 +40,16 @@ LapData::LapData(int lapnumber, int valid, int laptime, int sector1,
     id_ = id;
 }
 
-void LapData::SetLapNumber(SPageFileGraphic* pfg) {
+void LapData::SetLapNumber(const SPageFileGraphic* pfg) {
     currentLap_ = pfg->completedLaps;
 }
 
-void LapData::SetLapTimeValid(SPageFileGraphic* pfg) {
+void LapData::SetLapTimeValid(const SPageFileGraphic* pfg) {
     validLap_ = pfg->isValidLap; // this needs to be done with the UDP connection thing...
     laptime_ = pfg->iLastTime;
 }
 
-void LapData::AddCurrentSectorTime(SPageFileGraphic* pfg) {
+void LapData::AddCurrentSectorTime(const SPageFileGraphic* pfg) {
     switch (pfg->currentSectorIndex) 
     {
         case 1:
@@ -67,17 +64,18 @@ void LapData::AddCurrentSectorTime(SPageFileGraphic* pfg) {
     }
 }
 
-void LapData::SetInPit(SPageFileGraphic* pfg)
+void LapData::SetInPit(const SPageFileGraphic* pfg)
 {
     in_pit_ = pfg->isInPitLane;
 }
 
-void LapData::SetPosition(SPageFileGraphic* pfg)
+void LapData::SetPosition(const SPageFileGraphic* pfg)
 {
     position_ = pfg->position;
 }
 
-void LapData::Print() {
+void LapData::Print() const
+{
     printf("%d\n\t%d\n\t%d\n\t%d\n\t%d\n", currentLap_, laptime_, sector1_, sector2_, sector3_);
 }
 
