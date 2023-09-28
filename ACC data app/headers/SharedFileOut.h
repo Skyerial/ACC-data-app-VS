@@ -191,7 +191,7 @@ struct SPageFileGraphic
     int isInPitLane = 0;
     // added this, since it is present in the documentation
     // however it is possible it doesnt work...
-    int isValidLap = 1;
+    int isValidLap = 0;
 
     float surfaceGrip = 0;
     int mandatoryPitDone = 0;

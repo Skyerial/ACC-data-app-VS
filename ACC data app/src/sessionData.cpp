@@ -3,6 +3,8 @@
 // License: None
 // 
 // Implementation of the SessionData class functions.
+// It also contains the GetSessionType function that give the string
+// corresponding to the given number.
 //////////////////////////////////////////////////////////////////////////////
 #include "sessionData.h"
 
@@ -83,19 +85,6 @@ void SessionData::BestLap(int laptime)
 	else if (laptime < best_lap_ && laptime > 0)
 	{
 		best_lap_ = laptime;
-	}
-}
-
-// This function is slightly useless still
-// could also make this a helper function and let sessionData have
-// only one setter function
-void SessionData::SetBestLap(std::vector<LapData>& laps) {
-	best_lap_ = laps[0].getLapTime();
-
-	for (size_t i = 1; i < laps.size(); i++)
-	{
-		if (laps[i].getLapTime() < best_lap_)
-			best_lap_ = laps[i].getLapTime();
 	}
 }
 

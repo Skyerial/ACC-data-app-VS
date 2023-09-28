@@ -89,8 +89,6 @@ void DataCollector(ui_data_pair& pair)
 				if (laps.back().getLapNumber() == laps[laps.size() - 2].getLapNumber())
 					laps.pop_back();
 
-				session.SetBestLap(laps);
-
 				// write to database TEST
 				InsertSessionLap(session, laps);
 			}

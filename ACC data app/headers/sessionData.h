@@ -1,6 +1,4 @@
 #pragma once
-#include "Lapdata.h"
-
 #include <string>
 
 #include "SharedFileOut.h"
@@ -34,9 +32,8 @@ public:
 
     // logic
     void Update(SPageFileStatic* pfs, SPageFileGraphic* pfg);
+    // Check if the given laptime is a new best lap
     void BestLap(int laptime);
-
-    void SetBestLap(std::vector<LapData>& laps);
 
 private:
     int id_; // only used for when sessiondata is retrieved from database
@@ -51,4 +48,5 @@ private:
     std::wstring driver_surname_;
 };
 
+// Given a session int it gives back the session name as a string
 std::string GetSessionType(int session);

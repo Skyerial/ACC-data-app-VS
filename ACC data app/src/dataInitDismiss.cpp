@@ -1,3 +1,12 @@
+//////////////////////////////////////////////////////////////////////////////
+// Author: Daniel Oppenhuizen
+// License: None
+// 
+// This file is responsible for getting access to certain pagefiles
+// that are used by the game to store information about the session, car and
+// what not
+//////////////////////////////////////////////////////////////////////////////
+
 #include "dataInitDismiss.h"
 
 #include <windows.h>
