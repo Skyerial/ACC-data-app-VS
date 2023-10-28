@@ -13,6 +13,7 @@
 #include "dataUITransfer.h"
 #include "dataAppUI.h"
 #include "dataCollector.h"
+#include "socket/UdpDataCollector.h"
 
 // include needed to get full path of documents folder
 // #include <C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um\\ShlObj_core.h>
@@ -36,9 +37,11 @@ int main(int argc, char* argv[])
 	// this is good to do once we add more threads tho
 	std::jthread ui_thread(UIRenderer, mydoc_path, std::ref(pair));
 	std::jthread data_thread(DataCollector, std::ref(pair));
+	std::jthread udp_thread(UdpDataCollector, std::ref(pair));
 
 	ui_thread.join();
 	data_thread.join();
+	udp_thread.join();
 
 	return 0;
 }

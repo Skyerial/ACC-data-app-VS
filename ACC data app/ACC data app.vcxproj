@@ -35,6 +35,8 @@
     <ClCompile Include="src\lapData.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sessionData.cpp" />
+    <ClCompile Include="src\socket\BroadcastingClient.cpp" />
+    <ClCompile Include="src\socket\UdpDataCollector.cpp" />
     <ClCompile Include="src\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -44,6 +46,8 @@
     <ClInclude Include="headers\dataCollector.h" />
     <ClInclude Include="headers\dataUITransfer.h" />
     <ClInclude Include="headers\lapData.h" />
+    <ClInclude Include="headers\socket\BroadcastingProtocol.h" />
+    <ClInclude Include="headers\socket\UdpDataCollector.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
