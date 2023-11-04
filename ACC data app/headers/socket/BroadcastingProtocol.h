@@ -42,8 +42,10 @@ enum InboundMessageTypes
 class BroadcastingProtocol
 {
 public:
+	BroadcastingProtocol();
+
 	void construct_conn_msg(const ConnectionMessage& msg, std::string& msg_string);
 	void process_incoming_msg(char(&message)[1024]);
 private:
-
+	int connection_id_;
 };

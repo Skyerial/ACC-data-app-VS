@@ -12,6 +12,7 @@
 
 #include "dataUITransfer.h"
 #include "dataAppUI.h"
+#include "Collectors.h"
 #include "dataCollector.h"
 #include "socket/UdpDataCollector.h"
 
@@ -36,12 +37,14 @@ int main(int argc, char* argv[])
 	// since we only use two threads atm there no need to make a vector threadpool
 	// this is good to do once we add more threads tho
 	std::jthread ui_thread(UIRenderer, mydoc_path, std::ref(pair));
-	std::jthread data_thread(DataCollector, std::ref(pair));
-	std::jthread udp_thread(UdpDataCollector, std::ref(pair));
+	std::jthread collector_thread(collectors, std::ref(pair));
+	//std::jthread data_thread(DataCollector, std::ref(pair));
+	//std::jthread udp_thread(UdpDataCollector, std::ref(pair));
 
 	ui_thread.join();
-	data_thread.join();
-	udp_thread.join();
+	collector_thread.join();
+	//data_thread.join();
+	//udp_thread.join();
 
 	return 0;
 }

@@ -75,10 +75,13 @@
     <ClCompile Include="src\database\sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\socket\BroadcastingClient.cpp">
+    <ClCompile Include="src\socket\BroadcastingProtocol.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\socket\UdpDataCollector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Collectors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -144,6 +147,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\socket\UdpDataCollector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\Collectors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

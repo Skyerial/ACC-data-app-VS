@@ -26,6 +26,7 @@
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Collectors.cpp" />
     <ClCompile Include="src\dataAppUI.cpp" />
     <ClCompile Include="src\database\database.cpp" />
     <ClCompile Include="src\database\sqlite3.c" />
@@ -35,11 +36,12 @@
     <ClCompile Include="src\lapData.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sessionData.cpp" />
-    <ClCompile Include="src\socket\BroadcastingClient.cpp" />
+    <ClCompile Include="src\socket\BroadcastingProtocol.cpp" />
     <ClCompile Include="src\socket\UdpDataCollector.cpp" />
     <ClCompile Include="src\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\Collectors.h" />
     <ClInclude Include="headers\dataAppUI.h" />
     <ClInclude Include="headers\database\database.h" />
     <ClInclude Include="headers\database\sqlite3.h" />

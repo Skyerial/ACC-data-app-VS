@@ -7,7 +7,14 @@
 
 #include "socket/BroadcastingProtocol.h"
 
+#include <iostream>
 #include <sstream>
+
+BroadcastingProtocol::BroadcastingProtocol()
+{
+	connection_id_ = 0;
+}
+
 
 void BroadcastingProtocol::construct_conn_msg(const ConnectionMessage& msg, std::string& msg_string)
 {
@@ -36,9 +43,15 @@ void BroadcastingProtocol::process_incoming_msg(char(&message)[1024])
 	auto message_type = static_cast<InboundMessageTypes>(message[0]);
 	switch (message_type)
 	{
-	case REGISTRATION_RESULT:
-		break;
-	default:
-		break;
+		case REGISTRATION_RESULT:
+		{
+			// ehm no clue so far
+			connection_id_ = message[1] + message[2] + message[3];
+			bool connection_succes = message[4];
+			bool is_read_only = (message[5] == 0);
+			break;
+		}
+		default:
+			break;
 	}
 }

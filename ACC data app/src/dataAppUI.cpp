@@ -473,9 +473,26 @@ namespace {
     }
 } // anonymous namespace
 
+namespace test
+{
+	void RenderTestWindow(std::string message)
+	{
+        ImGui::SetNextWindowSize(ImVec2(200, 200));
+
+        if (!ImGui::Begin("Test", NULL))
+        {
+            ImGui::End();
+            return;
+        }
+
+        ImGui::Text(message.c_str());
+        ImGui::End();
+	}
+}
 
 void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
 {
+    std::mutex mutex;
     /////////////////
     // IMGUI stuff //
     /////////////////
@@ -570,6 +587,17 @@ void UIRenderer(std::wstring mydoc_path, ui_data_pair& pair)
 
         if (win_state.show_demo_window) {
             ImGui::ShowDemoWindow(&win_state.show_demo_window);
+        }
+
+        if (pair.enable_test_console)
+        {
+            if (mutex.try_lock())
+            {
+                test::RenderTestWindow(pair.test_msg);
+                mutex.unlock();
+            }
+            else
+                test::RenderTestWindow("Message is being processed");
         }
 
         // Rendering
